@@ -1,0 +1,8 @@
+{
+	"type": "werewolf:werewolf",
+	"map": "werewolf:werewolf",
+	"players": {
+		"min": 1,
+		"max": 24
+	}
+}

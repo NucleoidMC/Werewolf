@@ -1,0 +1,24 @@
+{
+	"schemaVersion": 1,
+	"id": "werewolf",
+	"version": "${version}",
+	"name": "Werewolf",
+	"description": "A version of the Werewolf party game for Minecraft.",
+	"authors": [
+		"haykam821"
+	],
+	"contact": {
+		"homepage": "https://github.com/NucleoidMC/Werewolf#readme",
+		"issues": "https://github.com/NucleoidMC/Werewolf/issues"
+	},
+	"entrypoints": {
+		"main": [
+			"io.github.haykam821.werewolf.Main"
+		]
+	},
+	"license": "MIT",
+	"icon": "assets/werewolf/icon.png",
+	"depends": {
+		"fabricloader": ">=0.4.0"
+	}
+}
