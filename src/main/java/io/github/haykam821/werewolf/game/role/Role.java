@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.haykam821.werewolf.game.PlayerEntry;
-import io.github.haykam821.werewolf.game.TimeCycle;
 import io.github.haykam821.werewolf.game.role.action.AbstainAction;
 import io.github.haykam821.werewolf.game.role.action.Action;
 import io.github.haykam821.werewolf.game.role.action.LynchAction;
+import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;

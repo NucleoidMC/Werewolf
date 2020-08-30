@@ -1,4 +1,4 @@
-package io.github.haykam821.werewolf.game;
+package io.github.haykam821.werewolf.game.timecycle;
 
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;

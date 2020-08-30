@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import io.github.haykam821.werewolf.game.PlayerEntry;
-import io.github.haykam821.werewolf.game.TimeCycle;
 import io.github.haykam821.werewolf.game.WerewolfConfig;
 import io.github.haykam821.werewolf.game.map.WerewolfMap;
 import io.github.haykam821.werewolf.game.role.Alignment;
@@ -15,6 +14,8 @@ import io.github.haykam821.werewolf.game.role.Role;
 import io.github.haykam821.werewolf.game.role.Roles;
 import io.github.haykam821.werewolf.game.role.action.Action;
 import io.github.haykam821.werewolf.game.role.action.ActionQueueEntry;
+import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
+import io.github.haykam821.werewolf.game.timecycle.TimeCycleBar;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.entity.damage.DamageSource;
@@ -55,6 +56,7 @@ public class WerewolfActivePhase {
 	private final List<ActionQueueEntry> actionQueue = new ArrayList<>();
 	private final Object2IntLinkedOpenHashMap<PlayerEntry> votes = new Object2IntLinkedOpenHashMap<>();
 	private int abstainVotes = 0;
+	private TimeCycleBar bar;
 
 	public WerewolfActivePhase(GameWorld gameWorld, WerewolfMap map, WerewolfConfig config) {
 		this.gameWorld = gameWorld;
@@ -64,6 +66,8 @@ public class WerewolfActivePhase {
 		this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
 
 		this.votes.defaultReturnValue(0);
+
+		this.bar = new TimeCycleBar(this);
 	}
 
 	public static void setRules(Game game) {
@@ -200,10 +204,13 @@ public class WerewolfActivePhase {
 			// Switch time cycle
 			this.timeCycle = this.timeCycle == TimeCycle.NIGHT ? TimeCycle.DAY : TimeCycle.NIGHT;
 			this.reapplyAll();
-	
+
+			this.bar.changeTimeCycle();
 			this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
 		}
 		this.ticksUntilSwitch -= 1;
+
+		this.bar.tick();
 
 		Object2IntLinkedOpenHashMap<Alignment> alignmentCounts = new Object2IntLinkedOpenHashMap<>();
 		alignmentCounts.defaultReturnValue(0);
@@ -294,12 +301,24 @@ public class WerewolfActivePhase {
 		user.getRole().reapply(user);
 	}
 
+	public GameWorld getGameWorld() {
+		return this.gameWorld;
+	}
+
 	public List<PlayerEntry> getPlayers() {
 		return this.players;
 	}
 
 	public TimeCycle getTimeCycle() {
 		return this.timeCycle;
+	}
+
+	public int getTicksUntilSwitch() {
+		return this.ticksUntilSwitch;
+	}
+
+	public WerewolfConfig getConfig() {
+		return this.config;
 	}
 
 	public void sendMessage(Text message) {

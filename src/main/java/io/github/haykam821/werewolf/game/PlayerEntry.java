@@ -6,6 +6,7 @@ import java.util.Map;
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
 import io.github.haykam821.werewolf.game.role.Role;
 import io.github.haykam821.werewolf.game.role.action.Action;
+import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
