@@ -284,11 +284,11 @@ public class WerewolfActivePhase {
 	}
 
 	private ActionResult handleMessage(String message, ServerPlayerEntity sender) {
-		if (message.length() == 0) return ActionResult.PASS;
-		if (message.charAt(0) != '#') return ActionResult.PASS;
+		if (message.length() == 0) return ActionResult.SUCCESS;
+		if (message.charAt(0) != '#') return ActionResult.SUCCESS;
 		
 		PlayerEntry entry = this.getEntryFromPlayer(sender);
-		if (entry == null) return ActionResult.PASS;
+		if (entry == null) return ActionResult.SUCCESS;
 
 		if (!entry.getRole().hasWolfChat()) {
 			entry.sendMessage(new TranslatableText("text.werewolf.chat.wolf.denied").formatted(Formatting.RED));
@@ -303,8 +303,11 @@ public class WerewolfActivePhase {
 		if (text instanceof TranslatableText) {
 			TranslatableText translatableText = (TranslatableText) text;
 			return this.handleMessage((String) translatableText.getArgs()[1], sender);
+		} else if (text instanceof LiteralText) {
+			LiteralText literalText = (LiteralText) text;
+			return this.handleMessage((String) literalText.asString(), sender);
 		}
-		return ActionResult.PASS;
+		return ActionResult.SUCCESS;
 	}
 
 	private boolean onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
