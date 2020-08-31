@@ -123,10 +123,12 @@ public class WerewolfActivePhase {
 			PlayerEntry entry = new PlayerEntry(this, player, role);
 			this.players.add(entry);
 
+			index += 1;
+		}
+
+		for (PlayerEntry entry : this.players) { 
 			entry.resetRemainingActions();
 			entry.spawn(world, this.map.getSpawn());
-
-			index += 1;
 		}
 
 		MutableText breakdown = new TranslatableText("text.werewolf.role.breakdown.header");
