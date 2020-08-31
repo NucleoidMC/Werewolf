@@ -6,11 +6,14 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public abstract class Action {
-	public abstract void execute(PlayerEntry user);
+	public void execute(PlayerEntry user) {
+		return;
+	}
 
 	public void use(PlayerEntry user) {
 		user.getPhase().queueAction(this, user);
 		user.decrementRemainingActions();
+		user.getRole().reapply(user);
 	}
 
 	public int getPriority() {

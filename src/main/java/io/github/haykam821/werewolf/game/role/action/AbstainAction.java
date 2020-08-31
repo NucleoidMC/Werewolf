@@ -6,7 +6,8 @@ import net.minecraft.item.Items;
 
 public class AbstainAction extends Action {
 	@Override
-	public void execute(PlayerEntry user) {
+	public void use(PlayerEntry user) {
+		super.use(user);
 		user.getPhase().addAbstainVote();
 	}
 

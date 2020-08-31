@@ -10,7 +10,8 @@ public class LynchAction extends TargetAction {
 	}
 
 	@Override
-	public void execute(PlayerEntry user) {
+	public void use(PlayerEntry user) {
+		super.use(user);
 		user.getPhase().addVote(this.getTarget());
 	}
 
