@@ -20,4 +20,9 @@ public class SeerRole extends VillagerRole {
 
 		return actions;
 	}
+
+	@Override
+	public boolean canBeCursed() {
+		return false;
+	}
 }

@@ -101,6 +101,10 @@ public class WerewolfActivePhase {
 		return Roles.VILLAGER.getRole();
 	}
 
+	private boolean isCursedByIndex(int index) {
+		return index == 5 || index == 19;
+	}
+
 	private List<ServerPlayerEntity> getShuffledPlayers() {
 		List<ServerPlayerEntity> players = new ArrayList<>();
 		for (ServerPlayerEntity player : this.gameWorld.getPlayerSet()) {
@@ -120,7 +124,9 @@ public class WerewolfActivePhase {
 			Role role = this.getRoleByIndex(index);
 			roleCounts.addTo(role, 1);
 
-			PlayerEntry entry = new PlayerEntry(this, player, role);
+			boolean cursed = role.canBeCursed() && this.isCursedByIndex(index);
+
+			PlayerEntry entry = new PlayerEntry(this, player, role, cursed);
 			this.players.add(entry);
 
 			index += 1;

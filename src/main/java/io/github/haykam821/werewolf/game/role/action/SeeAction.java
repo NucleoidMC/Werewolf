@@ -13,7 +13,7 @@ public class SeeAction extends TargetAction {
 
 	@Override
 	public void execute(PlayerEntry user) {
-		Role role = this.getTarget().getRole();
+		Role role = this.getTarget().getSeenRole();
 		user.sendMessage(new TranslatableText(this.getTranslationKey() + ".result", role.getName()));
 	}
 

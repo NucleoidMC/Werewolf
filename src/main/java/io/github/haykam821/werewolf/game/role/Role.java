@@ -98,7 +98,11 @@ public abstract class Role {
 
 	public abstract Alignment getAlignment();
 
-	public Alignment getSeenAlignment() {
-		return this.getAlignment();
+	public Role getSeenRole(PlayerEntry entry) {
+		return entry.isCursed() ? Roles.WOLF.getRole() : this;
+	}
+
+	public boolean canBeCursed() {
+		return this.getAlignment() != Alignment.WOLF;
 	}
 }

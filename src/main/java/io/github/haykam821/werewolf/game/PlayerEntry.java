@@ -21,12 +21,14 @@ public class PlayerEntry {
 	private final ServerPlayerEntity player;
 	private int remainingActions;
 	private Role role;
+	private boolean cursed;
 	private Map<ItemStack, Action> actionStacks = new HashMap<>();
 
-	public PlayerEntry(WerewolfActivePhase phase, ServerPlayerEntity player, Role role) {
+	public PlayerEntry(WerewolfActivePhase phase, ServerPlayerEntity player, Role role, boolean cursed) {
 		this.phase = phase;
 		this.player = player;
 		this.role = role;
+		this.cursed = cursed;
 	}
 
 	public WerewolfActivePhase getPhase() {
@@ -60,8 +62,20 @@ public class PlayerEntry {
 	public void changeRole(Role role) {
 		this.role.reapply(this);
 
+		if (!role.canBeCursed()) {
+			this.cursed = false;
+		}
+
 		this.role = role;
 		this.sendMessage(new TranslatableText("text.werewolf.role.change", this.role.getName()));
+	}
+
+	public boolean isCursed() {
+		return this.cursed;
+	}
+
+	public Role getSeenRole() {
+		return this.getRole().getSeenRole(this);
 	}
 
 	public Map<ItemStack, Action> getActionStacks() {
