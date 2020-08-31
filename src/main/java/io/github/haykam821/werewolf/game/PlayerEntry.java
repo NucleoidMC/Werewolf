@@ -100,6 +100,15 @@ public class PlayerEntry {
 		this.sendMessage(new TranslatableText("text.werewolf.role.initial", this.role.getName()));
 	}
 
+	public Text getLynchRoleName() {
+		Text roleName = this.getRole().getName();
+
+		if (this.isCursed()) {
+			return new TranslatableText("text.werewolf.cursed").append(" ").append(roleName);
+		}
+		return roleName;
+	}
+
 	@Override
 	public String toString() {
 		return "PlayerEntry{player=" + this.player + ", role=" + this.role + ", remainingActions=" + this.remainingActions + "}";

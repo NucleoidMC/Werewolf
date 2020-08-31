@@ -191,7 +191,7 @@ public class WerewolfActivePhase {
 			PlayerEntry toLynch = possibleLynches.get(0);
 			this.eliminate(toLynch);
 
-			this.sendMessage(new TranslatableText("action.lynch.announce", toLynch));
+			this.sendMessage(new TranslatableText("action.lynch.announce", toLynch, toLynch.getLynchRoleName()));
 		} else {
 			this.sendMessage(new TranslatableText("action.lynch.announce.tie"));
 		}
