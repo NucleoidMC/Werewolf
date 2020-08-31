@@ -98,6 +98,7 @@ public class WerewolfActivePhase {
 	private Role getRoleByIndex(int index) {
 		if (index == 0) return Roles.WOLF.getRole();
 		if (index == 1) return Roles.SEER.getRole();
+		if (index == 6) return Roles.CULTIST.getRole();
 		return Roles.VILLAGER.getRole();
 	}
 

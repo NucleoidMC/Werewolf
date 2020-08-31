@@ -6,7 +6,8 @@ import net.minecraft.util.Identifier;
 public enum Roles {
 	VILLAGER("villager", new VillagerRole()),
 	SEER("seer", new SeerRole()),
-	WOLF("wolf", new WolfRole());
+	WOLF("wolf", new WolfRole()),
+	CULTIST("cultist", new CultistRole());
 
 	private Role role;
 
