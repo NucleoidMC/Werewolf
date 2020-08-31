@@ -4,17 +4,20 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum TimeCycle {
-	NIGHT("night"),
-	DAY("day");
+	NIGHT("night", 18000),
+	DAY("day", 6000);
 
-	private Text name;
-	private Text warnText;
-	private Text endText;
+	private final Text name;
+	private final Text warnText;
+	private final Text endText;
+	private final int timeOfDay;
 
-	private TimeCycle(String name) {
+	private TimeCycle(String name, int timeOfDay) {
 		this.name = new TranslatableText("timeCycle." + name);
 		this.warnText = new TranslatableText("timeCycle." + name + ".warn");
 		this.endText = new TranslatableText("timeCycle." + name + ".end");
+
+		this.timeOfDay = timeOfDay;
 	}
 
 	public Text getName() {
@@ -27,5 +30,9 @@ public enum TimeCycle {
 
 	public Text getEndText() {
 		return this.endText;
+	}
+
+	public int getTimeOfDay() {
+		return this.timeOfDay;
 	}
 }

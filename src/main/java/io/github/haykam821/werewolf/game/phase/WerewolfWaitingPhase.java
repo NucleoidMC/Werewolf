@@ -39,7 +39,8 @@ public class WerewolfWaitingPhase {
 		return mapBuilder.create().thenCompose(map -> {
 			BubbleWorldConfig worldConfig = new BubbleWorldConfig()
 				.setGenerator(map.createGenerator(context.getServer()))
-				.setDefaultGameMode(GameMode.ADVENTURE);
+				.setDefaultGameMode(GameMode.ADVENTURE)
+				.setTimeOfDay(10000);
 
 			return context.openWorld(worldConfig).thenApply(gameWorld -> {
 				WerewolfWaitingPhase phase = new WerewolfWaitingPhase(gameWorld, map, context.getConfig());

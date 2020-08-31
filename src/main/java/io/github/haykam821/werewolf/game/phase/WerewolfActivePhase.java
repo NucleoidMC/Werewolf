@@ -120,6 +120,8 @@ public class WerewolfActivePhase {
 	}
 
 	private void open() {
+		this.world.setTimeOfDay(this.timeCycle.getTimeOfDay());
+
 		Object2IntLinkedOpenHashMap<Role> roleCounts = new Object2IntLinkedOpenHashMap<>();
 		roleCounts.defaultReturnValue(0);
 
@@ -220,6 +222,8 @@ public class WerewolfActivePhase {
 			this.reapplyAll();
 
 			this.bar.changeTimeCycle();
+			this.world.setTimeOfDay(this.timeCycle.getTimeOfDay());
+
 			this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
 		}
 		this.ticksUntilSwitch -= 1;
