@@ -23,6 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -37,6 +38,7 @@ import xyz.nucleoid.plasmid.game.GameWorld;
 import xyz.nucleoid.plasmid.game.event.GameOpenListener;
 import xyz.nucleoid.plasmid.game.event.GameTickListener;
 import xyz.nucleoid.plasmid.game.event.PlayerAddListener;
+import xyz.nucleoid.plasmid.game.event.PlayerChatListener;
 import xyz.nucleoid.plasmid.game.event.PlayerDamageListener;
 import xyz.nucleoid.plasmid.game.event.PlayerDeathListener;
 import xyz.nucleoid.plasmid.game.event.UseItemListener;
@@ -89,6 +91,7 @@ public class WerewolfActivePhase {
 			game.on(GameOpenListener.EVENT, phase::open);
 			game.on(GameTickListener.EVENT, phase::tick);
 			game.on(PlayerAddListener.EVENT, phase::addPlayer);
+			game.on(PlayerChatListener.EVENT, phase::onPlayerChat);
 			game.on(PlayerDamageListener.EVENT, phase::onPlayerDamage);
 			game.on(PlayerDeathListener.EVENT, phase::onPlayerDeath);
 			game.on(UseItemListener.EVENT, phase::onUseItem);
@@ -148,6 +151,8 @@ public class WerewolfActivePhase {
 			}
 		}
 		this.gameWorld.getPlayerSet().sendMessage(breakdown.formatted(Formatting.GOLD));
+
+		this.sendWolfMessage(new TranslatableText("text.werewolf.chat.wolf.hint").formatted(Formatting.GRAY));
 	}
 
 	public void addVote(PlayerEntry target) {
@@ -278,6 +283,30 @@ public class WerewolfActivePhase {
 		}
 	}
 
+	private ActionResult handleMessage(String message, ServerPlayerEntity sender) {
+		if (message.length() == 0) return ActionResult.PASS;
+		if (message.charAt(0) != '#') return ActionResult.PASS;
+		
+		PlayerEntry entry = this.getEntryFromPlayer(sender);
+		if (entry == null) return ActionResult.PASS;
+
+		if (!entry.getRole().hasWolfChat()) {
+			entry.sendMessage(new TranslatableText("text.werewolf.chat.wolf.denied").formatted(Formatting.RED));
+			return ActionResult.FAIL;
+		}
+
+		this.sendWolfMessage(sender, new LiteralText(message.substring(1)));
+		return ActionResult.FAIL;
+	}
+
+	private ActionResult onPlayerChat(Text text, ServerPlayerEntity sender) {
+		if (text instanceof TranslatableText) {
+			TranslatableText translatableText = (TranslatableText) text;
+			return this.handleMessage((String) translatableText.getArgs()[1], sender);
+		}
+		return ActionResult.PASS;
+	}
+
 	private boolean onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
 		return true;
 	}
@@ -332,6 +361,19 @@ public class WerewolfActivePhase {
 
 	public void sendMessage(Text message) {
 		this.gameWorld.getPlayerSet().sendMessage(message);
+	}
+
+	public void sendWolfMessage(Text message) {
+		Text prefixedMessage = new TranslatableText("text.werewolf.chat.wolf", message);
+		for (PlayerEntry entry : this.players) {
+			if (entry.getRole().hasWolfChat()) {
+				entry.sendMessage(prefixedMessage);
+			}
+		}
+	}
+
+	public void sendWolfMessage(ServerPlayerEntity sender, Text message) {
+		this.sendWolfMessage(new TranslatableText("chat.type.text", sender.getDisplayName(), message));
 	}
 
 	static {

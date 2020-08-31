@@ -105,4 +105,8 @@ public abstract class Role {
 	public boolean canBeCursed() {
 		return this.getAlignment() != Alignment.WOLF;
 	}
+
+	public boolean hasWolfChat() {
+		return false;
+	}
 }

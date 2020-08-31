@@ -25,4 +25,9 @@ public class WolfRole extends Role {
 
 		return actions;
 	}
+
+	@Override
+	public boolean hasWolfChat() {
+		return true;
+	}
 }
