@@ -10,7 +10,7 @@ public enum Alignment {
 	private Text name;
 
 	private Alignment(String name) {
-		this.name = new TranslatableText("timeCycle." + name);
+		this.name = new TranslatableText("alignment." + name);
 	}
 
 	public Text getName() {
