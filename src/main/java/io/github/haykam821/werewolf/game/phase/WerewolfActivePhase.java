@@ -179,8 +179,12 @@ public class WerewolfActivePhase {
 	}
 
 	private void lynch() {
-		int maxVotes = Collections.max(this.votes.values());
+		if (this.votes.size() == 0) {
+			this.sendMessage(new TranslatableText("action.lynch.announce.none"));
+			return;
+		}
 
+		int maxVotes = Collections.max(this.votes.values());
 		if (maxVotes >= this.abstainVotes) {
 			this.sendMessage(new TranslatableText("action.lynch.announce.abstain"));
 			return;
@@ -215,7 +219,9 @@ public class WerewolfActivePhase {
 			}
 			this.actionQueue.clear();
 
-			this.lynch();
+			if (this.timeCycle == TimeCycle.DAY) {
+				this.lynch();
+			}
 	
 			// Switch time cycle
 			this.timeCycle = this.timeCycle == TimeCycle.NIGHT ? TimeCycle.DAY : TimeCycle.NIGHT;
