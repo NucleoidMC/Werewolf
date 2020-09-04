@@ -3,12 +3,18 @@ package io.github.haykam821.werewolf.game.role.action;
 import io.github.haykam821.werewolf.game.PlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public class AbstainAction extends Action {
 	@Override
 	public void use(PlayerEntry user) {
 		super.use(user);
 		user.getPhase().addAbstainVote();
+
+		Text message = new TranslatableText(this.getTranslationKey() + ".select", user.getName()).formatted(Formatting.DARK_GREEN);
+		user.getPhase().sendMessage(message);
 	}
 
 	@Override
