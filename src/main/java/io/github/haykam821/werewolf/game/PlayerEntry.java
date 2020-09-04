@@ -1,13 +1,12 @@
 package io.github.haykam821.werewolf.game;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
 import io.github.haykam821.werewolf.game.role.Role;
 import io.github.haykam821.werewolf.game.role.action.Action;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -23,7 +22,7 @@ public class PlayerEntry {
 	private int remainingActions;
 	private Role role;
 	private boolean cursed;
-	private Map<ItemStack, Action> actionStacks = new HashMap<>();
+	private List<Action> actions = new ArrayList<>();
 
 	public PlayerEntry(WerewolfActivePhase phase, ServerPlayerEntity player, Role role, boolean cursed) {
 		this.phase = phase;
@@ -83,12 +82,19 @@ public class PlayerEntry {
 		return this.getRole().getSeenRole(this);
 	}
 
-	public Map<ItemStack, Action> getActionStacks() {
-		return this.actionStacks;
+	public Action getAction(int index) {
+		if (index < 0 || index >= this.actions.size()) {
+			return null;
+		}
+		return this.actions.get(index);
 	}
 
-	public void putActionStack(ItemStack stack, Action action) {
-		this.actionStacks.put(stack, action);
+	public void putAction(Action action) {
+		this.actions.add(action);
+	}
+
+	public void clearActions() {
+		this.actions.clear();
 	}
 
 	public void sendMessage(Text message) {

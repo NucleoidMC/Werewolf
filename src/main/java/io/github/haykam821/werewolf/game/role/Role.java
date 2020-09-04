@@ -34,7 +34,7 @@ public abstract class Role {
 
 	public void unapply(PlayerEntry entry) {
 		entry.getPlayer().inventory.clear();
-		entry.getActionStacks().clear();
+		entry.clearActions();
 	}
 
 	private List<Action> getActions(PlayerEntry entry) {
@@ -52,7 +52,7 @@ public abstract class Role {
 			entry.setRemainingActions(actions.size());
 		}
 
-		int slot = 0;
+		int index = 0;
 		for (Action action : actions) {
 			ItemStackBuilder builder = ItemStackBuilder.of(action.getDisplayStack(entry)).setName(action.getName());
 			for (Text lore : action.getLore()) {
@@ -60,10 +60,12 @@ public abstract class Role {
 			}
 
 			ItemStack stack = builder.build();
-			entry.putActionStack(stack, action);
-			player.inventory.setStack(slot, stack);
+			stack.getTag().putInt("ActionIndex", index);
 
-			slot += 1;
+			entry.putAction(action);
+			player.inventory.setStack(index, stack);
+
+			index += 1;
 		}
 
 		// Update inventory

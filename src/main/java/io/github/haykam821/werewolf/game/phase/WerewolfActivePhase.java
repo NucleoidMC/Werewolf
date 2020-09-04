@@ -338,7 +338,7 @@ public class WerewolfActivePhase {
 
 		PlayerEntry entry = this.getEntryFromPlayer(player);
 		if (entry != null) {
-			Action action = entry.getActionStacks().get(stack);
+			Action action = entry.getAction(stack.getTag().getInt("ActionIndex"));
 			if (action != null) {
 				action.use(entry);
 			}
