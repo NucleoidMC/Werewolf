@@ -48,6 +48,10 @@ public abstract class Role {
 		ServerPlayerEntity player = entry.getPlayer();
 
 		List<Action> actions = this.getActions(entry);
+		if (actions.size() < entry.getRemainingActions()) {
+			entry.setRemainingActions(actions.size());
+		}
+
 		int slot = 0;
 		for (Action action : actions) {
 			ItemStack stack = ItemStackBuilder.of(action.getDisplayStack(entry))

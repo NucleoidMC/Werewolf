@@ -48,6 +48,10 @@ public class PlayerEntry {
 		this.remainingActions -= 1;
 	}
 
+	public void setRemainingActions(int remainingActions) {
+		this.remainingActions = remainingActions;
+	}
+
 	public void resetRemainingActions() {
 		if (this.getPhase().getTimeCycle() == TimeCycle.NIGHT) {
 			this.remainingActions = this.getRole().getMaxNightActions(this);
