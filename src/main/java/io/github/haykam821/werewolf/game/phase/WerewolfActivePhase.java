@@ -1,6 +1,5 @@
 package io.github.haykam821.werewolf.game.phase;
 
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +45,7 @@ import xyz.nucleoid.plasmid.game.rule.GameRule;
 import xyz.nucleoid.plasmid.game.rule.RuleResult;
 
 public class WerewolfActivePhase {
-	private static final DecimalFormat FORMAT = new DecimalFormat("0.##");
+	private static final DecimalFormat FORMAT = new DecimalFormat("###,###");
 
 	private final GameWorld gameWorld;
 	private final ServerWorld world;
@@ -149,7 +148,8 @@ public class WerewolfActivePhase {
 			int count = entry.getIntValue();
 
 			if (count > 0) {
-				breakdown.append(new TranslatableText("text.werewolf.role.breakdown." + (count == 1 ? "single" : "plural"), role.getName(), count));
+				String translationKey = "text.werewolf.role.breakdown." + (count == 1 ? "single" : "plural");
+				breakdown.append(new TranslatableText(translationKey, role.getName(), FORMAT.format(count)));
 			}
 		}
 		this.gameWorld.getPlayerSet().sendMessage(breakdown.formatted(Formatting.GOLD));
@@ -387,9 +387,5 @@ public class WerewolfActivePhase {
 
 	public void sendWolfMessage(ServerPlayerEntity sender, Text message) {
 		this.sendWolfMessage(new TranslatableText("chat.type.text", sender.getDisplayName(), message));
-	}
-
-	static {
-		FORMAT.setRoundingMode(RoundingMode.DOWN);
 	}
 }
