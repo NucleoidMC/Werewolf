@@ -19,7 +19,7 @@ public class KillAction extends TargetAction {
 		user.sendMessage(new TranslatableText(this.getTranslationKey() + ".result", targetName).formatted(Formatting.DARK_GREEN));
 		user.getPhase().sendMessage(new TranslatableText(this.getTranslationKey() + ".announce", targetName).formatted(Formatting.DARK_GREEN));
 
-		user.getPhase().eliminate(user);
+		user.getPhase().eliminate(this.getTarget());
 	}
 
 	@Override
