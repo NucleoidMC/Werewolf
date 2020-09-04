@@ -180,13 +180,13 @@ public class WerewolfActivePhase {
 
 	private void lynch() {
 		if (this.votes.size() == 0) {
-			this.sendMessage(new TranslatableText("action.lynch.announce.none"));
+			this.sendMessage(new TranslatableText("action.lynch.announce.none").formatted(Formatting.DARK_GREEN));
 			return;
 		}
 
 		int maxVotes = Collections.max(this.votes.values());
 		if (maxVotes >= this.abstainVotes) {
-			this.sendMessage(new TranslatableText("action.lynch.announce.abstain"));
+			this.sendMessage(new TranslatableText("action.lynch.announce.abstain").formatted(Formatting.DARK_GREEN));
 			return;
 		}
 
@@ -198,14 +198,14 @@ public class WerewolfActivePhase {
 		}
 
 		if (possibleLynches.size() == 0) {
-			this.sendMessage(new TranslatableText("action.lynch.announce.none"));
+			this.sendMessage(new TranslatableText("action.lynch.announce.none").formatted(Formatting.DARK_GREEN));
 		} else if (possibleLynches.size() == 1) {
 			PlayerEntry toLynch = possibleLynches.get(0);
 			this.eliminate(toLynch);
 
-			this.sendMessage(new TranslatableText("action.lynch.announce", toLynch, toLynch.getLynchRoleName()));
+			this.sendMessage(new TranslatableText("action.lynch.announce", toLynch.getName(), toLynch.getLynchRoleName()).formatted(Formatting.DARK_GREEN));
 		} else {
-			this.sendMessage(new TranslatableText("action.lynch.announce.tie"));
+			this.sendMessage(new TranslatableText("action.lynch.announce.tie").formatted(Formatting.DARK_GREEN));
 		}
 	}
 
@@ -265,7 +265,7 @@ public class WerewolfActivePhase {
 	}
 
 	private void endGameWithWinner(Alignment alignment) {
-		Text text = new TranslatableText("text.werewolf.end", alignment.getName());
+		Text text = new TranslatableText("text.werewolf.end", alignment.getName()).formatted(Formatting.GOLD);
 		this.gameWorld.getPlayerSet().sendMessage(text);
 	
 		this.endGame();

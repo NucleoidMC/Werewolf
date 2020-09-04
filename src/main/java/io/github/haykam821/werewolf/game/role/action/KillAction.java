@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public class KillAction extends TargetAction {
 	public KillAction(PlayerEntry target) {
@@ -13,10 +14,10 @@ public class KillAction extends TargetAction {
 
 	@Override
 	public void execute(PlayerEntry user) {
-		Text targetName = this.getTarget().getPlayer().getDisplayName();
+		Text targetName = this.getTarget().getName();
 
-		user.sendMessage(new TranslatableText(this.getTranslationKey() + ".result", targetName));
-		user.getPhase().sendMessage(new TranslatableText(this.getTranslationKey() + ".announce", targetName));
+		user.sendMessage(new TranslatableText(this.getTranslationKey() + ".result", targetName).formatted(Formatting.DARK_GREEN));
+		user.getPhase().sendMessage(new TranslatableText(this.getTranslationKey() + ".announce", targetName).formatted(Formatting.DARK_GREEN));
 
 		user.getPhase().eliminate(user);
 	}

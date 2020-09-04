@@ -5,6 +5,7 @@ import io.github.haykam821.werewolf.game.role.Role;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public class SeeAction extends TargetAction {
 	public SeeAction(PlayerEntry target) {
@@ -14,7 +15,7 @@ public class SeeAction extends TargetAction {
 	@Override
 	public void execute(PlayerEntry user) {
 		Role role = this.getTarget().getSeenRole();
-		user.sendMessage(new TranslatableText(this.getTranslationKey() + ".result", role.getName()));
+		user.sendMessage(new TranslatableText(this.getTranslationKey() + ".result", this.getTarget().getName(), role.getName()).formatted(Formatting.DARK_GREEN));
 	}
 
 	@Override

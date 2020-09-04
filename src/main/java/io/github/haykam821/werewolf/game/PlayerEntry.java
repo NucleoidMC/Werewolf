@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.util.BlockBounds;
@@ -67,7 +68,7 @@ public class PlayerEntry {
 		}
 
 		this.role = role;
-		this.sendMessage(new TranslatableText("text.werewolf.role.change", this.role.getName()));
+		this.sendMessage(new TranslatableText("text.werewolf.role.change", this.role.getName()).formatted(Formatting.BLUE));
 	}
 
 	public boolean isCursed() {
@@ -97,7 +98,7 @@ public class PlayerEntry {
 		Vec3d spawn = spawnBounds.getCenter();
 		this.player.teleport(world, spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0);
 
-		this.sendMessage(new TranslatableText("text.werewolf.role.initial", this.role.getName()));
+		this.sendMessage(new TranslatableText("text.werewolf.role.initial", this.role.getName()).formatted(Formatting.BLUE));
 	}
 
 	public Text getLynchRoleName() {
@@ -107,6 +108,10 @@ public class PlayerEntry {
 			return new TranslatableText("text.werewolf.cursed").append(" ").append(roleName);
 		}
 		return roleName;
+	}
+
+	public Text getName() {
+		return this.getPlayer().getDisplayName();
 	}
 
 	@Override
