@@ -1,6 +1,9 @@
 package io.github.haykam821.werewolf.game.role.action;
 
+import java.util.List;
+
 import io.github.haykam821.werewolf.game.PlayerEntry;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -37,6 +40,17 @@ public abstract class TargetAction extends Action {
 	@Override
 	public Text getName() {
 		return new TranslatableText(this.getTranslationKey(), this.getTarget().getName());
+	}
+
+	@Override
+	public List<Text> getLore() {
+		List<Text> lore = super.getLore();
+
+		if (this.target != null) {
+			lore.add(new LiteralText("Target: " + this.target));
+		}
+
+		return lore;
 	}
 
 	@Override

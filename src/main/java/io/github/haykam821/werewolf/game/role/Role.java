@@ -54,10 +54,12 @@ public abstract class Role {
 
 		int slot = 0;
 		for (Action action : actions) {
-			ItemStack stack = ItemStackBuilder.of(action.getDisplayStack(entry))
-				.setName(action.getName())
-				.build();
+			ItemStackBuilder builder = ItemStackBuilder.of(action.getDisplayStack(entry)).setName(action.getName());
+			for (Text lore : action.getLore()) {
+				builder.addLore(lore);
+			}
 
+			ItemStack stack = builder.build();
 			entry.putActionStack(stack, action);
 			player.inventory.setStack(slot, stack);
 

@@ -1,5 +1,8 @@
 package io.github.haykam821.werewolf.game.role.action;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.haykam821.werewolf.game.PlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -24,6 +27,10 @@ public abstract class Action {
 
 	public Text getName() {
 		return new TranslatableText(this.getTranslationKey());
+	}
+
+	public List<Text> getLore() {
+		return new ArrayList<>();
 	}
 
 	public abstract ItemStack getDisplayStack(PlayerEntry user);
