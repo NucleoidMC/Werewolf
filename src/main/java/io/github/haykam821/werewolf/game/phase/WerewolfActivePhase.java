@@ -185,7 +185,7 @@ public class WerewolfActivePhase {
 		}
 
 		int maxVotes = Collections.max(this.votes.values());
-		if (maxVotes >= this.abstainVotes) {
+		if (this.abstainVotes >= maxVotes) {
 			this.sendMessage(new TranslatableText("action.lynch.announce.abstain").formatted(Formatting.DARK_GREEN));
 			return;
 		}
