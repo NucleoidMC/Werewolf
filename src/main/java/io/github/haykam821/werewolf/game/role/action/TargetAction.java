@@ -47,7 +47,7 @@ public abstract class TargetAction extends Action {
 		List<Text> lore = super.getLore();
 
 		if (this.target != null) {
-			lore.add(new LiteralText("Target: " + this.target));
+			lore.add(new LiteralText("Target: ").append(this.target.getName()));
 		}
 
 		return lore;
