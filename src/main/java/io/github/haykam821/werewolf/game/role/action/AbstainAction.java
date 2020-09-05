@@ -11,10 +11,14 @@ public class AbstainAction extends Action {
 	@Override
 	public void use(PlayerEntry user) {
 		super.use(user);
-		user.getPhase().addAbstainVote();
 
 		Text message = new TranslatableText(this.getTranslationKey() + ".select", user.getName()).formatted(Formatting.DARK_GREEN);
 		user.getPhase().sendMessage(message);
+	}
+
+	@Override
+	public void execute(PlayerEntry user) {
+		user.getPhase().addAbstainVote();
 	}
 
 	@Override
