@@ -380,7 +380,7 @@ public class WerewolfActivePhase {
 	}
 
 	public void sendWolfMessage(Text message) {
-		Text prefixedMessage = new TranslatableText("text.werewolf.chat.wolf", message);
+		Text prefixedMessage = new TranslatableText("text.werewolf.chat.wolf", message).formatted(Formatting.DARK_GRAY);
 		for (PlayerEntry entry : this.players) {
 			if (entry.getRole().hasWolfChat()) {
 				entry.sendMessage(prefixedMessage);
