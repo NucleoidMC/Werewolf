@@ -3,6 +3,7 @@
 	"map": "werewolf:werewolf",
 	"players": {
 		"min": 1,
-		"max": 24
+		"max": 24,
+		"threshold": 4
 	}
 }

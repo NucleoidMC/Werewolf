@@ -11,6 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameOpenContext;
+import xyz.nucleoid.plasmid.game.GameWaitingLobby;
 import xyz.nucleoid.plasmid.game.GameWorld;
 import xyz.nucleoid.plasmid.game.StartResult;
 import xyz.nucleoid.plasmid.game.config.PlayerConfig;
@@ -45,7 +46,7 @@ public class WerewolfWaitingPhase {
 			return context.openWorld(worldConfig).thenApply(gameWorld -> {
 				WerewolfWaitingPhase phase = new WerewolfWaitingPhase(gameWorld, map, context.getConfig());
 
-				gameWorld.openGame(game -> {
+				return GameWaitingLobby.open(gameWorld, context.getConfig().getPlayerConfig(), game -> {
 					WerewolfActivePhase.setRules(game);
 
 					// Listeners
@@ -55,8 +56,6 @@ public class WerewolfWaitingPhase {
 					game.on(OfferPlayerListener.EVENT, phase::offerPlayer);
 					game.on(RequestStartListener.EVENT, phase::requestStart);
 				});
-
-				return gameWorld;
 			});
 		});
 	}
