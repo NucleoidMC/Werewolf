@@ -142,6 +142,11 @@ public class WerewolfActivePhase {
 			entry.spawn(world, this.map.getSpawn());
 		}
 
+		this.sendBreakdown(roleCounts);
+		this.sendWolfMessage(new TranslatableText("text.werewolf.chat.wolf.hint").formatted(Formatting.GRAY));
+	}
+
+	private void sendBreakdown(Object2IntLinkedOpenHashMap<Role> roleCounts) {
 		MutableText breakdown = new TranslatableText("text.werewolf.role.breakdown.header");
 		for (Object2IntMap.Entry<Role> entry : roleCounts.object2IntEntrySet()) {
 			Role role = entry.getKey();
@@ -149,12 +154,10 @@ public class WerewolfActivePhase {
 
 			if (count > 0) {
 				String translationKey = "text.werewolf.role.breakdown." + (count == 1 ? "single" : "plural");
-				breakdown.append(new TranslatableText(translationKey, role.getName(), FORMAT.format(count)));
+				breakdown.append(new LiteralText("\n")).append(new TranslatableText(translationKey, role.getName(), FORMAT.format(count)));
 			}
 		}
 		this.gameWorld.getPlayerSet().sendMessage(breakdown.formatted(Formatting.GOLD));
-
-		this.sendWolfMessage(new TranslatableText("text.werewolf.chat.wolf.hint").formatted(Formatting.GRAY));
 	}
 
 	public void addVote(PlayerEntry target) {
