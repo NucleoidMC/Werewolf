@@ -24,7 +24,10 @@ public abstract class TargetAction extends Action {
 	@Override
 	public void use(PlayerEntry user) {
 		super.use(user);
+		this.sendUseMessage(user);
+	}
 
+	public void sendUseMessage(PlayerEntry user) {
 		String translationKey = this.getTranslationKey() + ".select";
 		Text targetName = this.getTarget().getName();
 

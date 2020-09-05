@@ -6,6 +6,7 @@ import java.util.List;
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
 import io.github.haykam821.werewolf.game.role.Role;
 import io.github.haykam821.werewolf.game.role.action.Action;
+import io.github.haykam821.werewolf.game.role.action.Totem;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -23,6 +24,7 @@ public class PlayerEntry {
 	private Role role;
 	private boolean cursed;
 	private List<Action> actions = new ArrayList<>();
+	private final List<Totem> totems = new ArrayList<>();
 
 	public PlayerEntry(WerewolfActivePhase phase, ServerPlayerEntity player, Role role, boolean cursed) {
 		this.phase = phase;
@@ -95,6 +97,14 @@ public class PlayerEntry {
 
 	public void clearActions() {
 		this.actions.clear();
+	}
+
+	public void putTotem(Totem totem) {
+		this.totems.add(totem);
+	}
+
+	public void clearTotems() {
+		this.totems.clear();
 	}
 
 	public void sendMessage(Text message) {

@@ -100,6 +100,7 @@ public class WerewolfActivePhase {
 	private Role getRoleByIndex(int index) {
 		if (index == 0) return Roles.WOLF.getRole();
 		if (index == 1) return Roles.SEER.getRole();
+		if (index == 5) return Roles.SHAMAN.getRole();
 		if (index == 6) return Roles.CULTIST.getRole();
 		return Roles.VILLAGER.getRole();
 	}
@@ -178,6 +179,10 @@ public class WerewolfActivePhase {
 		for (PlayerEntry entry : this.players) {
 			entry.resetRemainingActions();
 			entry.getRole().reapply(entry);
+
+			if (this.timeCycle == TimeCycle.NIGHT) {
+				entry.clearTotems();
+			}
 		}
 	}
 
@@ -217,6 +222,7 @@ public class WerewolfActivePhase {
 			this.abstainVotes = 0;
 			this.votes.clear();
 
+			this.actionQueue.sort(null);
 			for (ActionQueueEntry entry : this.actionQueue) {
 				entry.execute();
 			}

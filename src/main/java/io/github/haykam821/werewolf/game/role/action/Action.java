@@ -20,7 +20,7 @@ public abstract class Action {
 	}
 
 	public int getPriority() {
-		return 0;
+		return Priorities.DEFAULT;
 	}
 
 	public abstract String getTranslationKey();

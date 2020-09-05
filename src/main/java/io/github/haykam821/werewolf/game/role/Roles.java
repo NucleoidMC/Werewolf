@@ -7,7 +7,8 @@ public enum Roles {
 	VILLAGER("villager", new VillagerRole()),
 	SEER("seer", new SeerRole()),
 	WOLF("wolf", new WolfRole()),
-	CULTIST("cultist", new CultistRole());
+	CULTIST("cultist", new CultistRole()),
+	SHAMAN("shaman", new ShamanRole());
 
 	private Role role;
 

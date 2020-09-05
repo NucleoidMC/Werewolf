@@ -1,6 +1,10 @@
 {
 	"action.abstain": "Abstain",
 	"action.abstain.select": "%s has chosen to abstain from voting.",
+	"action.giveTotem": "Give %s to %s",
+	"action.giveTotem.announce": "It appears that %s is in possession of a mysterious totem.",
+	"action.giveTotem.result": "You gave your %s to %s.",
+	"action.giveTotem.select": "You have chosen to give your %s to %s.",
 	"action.kill": "Kill %s",
 	"action.kill.announce": "%s was found dead in the morning.",
 	"action.kill.result": "You killed %s.",
@@ -18,6 +22,7 @@
 	"alignment.wolf": "Wolf",
 	"gameType.werewolf.werewolf": "Werewolf",
 	"role.werewolf.seer": "Seer",
+	"role.werewolf.shaman": "Shaman",
 	"role.werewolf.villager": "Villager",
 	"role.werewolf.wolf": "Wolf",
 	"text.werewolf.chat.wolf": "[Wolf] %s",
@@ -35,5 +40,6 @@
 	"timeCycle.day.warn": "The day will end soon.",
 	"timeCycle.night": "Night",
 	"timeCycle.night.end": "The sun has risen, and it is now day.",
-	"timeCycle.night.warn": "The night will end soon."
+	"timeCycle.night.warn": "The night will end soon.",
+	"totem.default": "Default Totem"
 }
