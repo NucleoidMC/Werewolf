@@ -368,10 +368,11 @@ public class WerewolfActivePhase {
 			Action action = entry.getAction(stack.getTag().getInt("ActionIndex"));
 			if (action != null) {
 				action.use(entry);
+				return TypedActionResult.success(stack);
 			}
 		}
 
-		return TypedActionResult.success(stack);
+		return TypedActionResult.pass(stack);
 	}
 
 	public void queueAction(Action action, PlayerEntry user) {
