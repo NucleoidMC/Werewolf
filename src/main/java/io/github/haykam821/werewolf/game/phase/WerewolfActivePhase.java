@@ -187,6 +187,9 @@ public class WerewolfActivePhase {
 
 			if (this.timeCycle == TimeCycle.NIGHT) {
 				entry.clearTotems();
+			} else if (entry.hasTotem(Totem.DEATH)) {
+				this.sendMessage(new TranslatableText("totem.death.activate", entry.getName(), entry.getLynchRoleName()).formatted(Formatting.DARK_GREEN));
+				this.eliminate(entry);
 			}
 		}
 	}

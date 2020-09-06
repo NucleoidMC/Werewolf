@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum Totem {
+	DEATH("death"),
 	PACIFISM("pacifism");
 
 	private static final List<Totem> VALUES = new ArrayList<>();

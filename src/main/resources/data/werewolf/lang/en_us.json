@@ -41,5 +41,7 @@
 	"timeCycle.night": "Night",
 	"timeCycle.night.end": "The sun has risen, and it is now day.",
 	"timeCycle.night.warn": "The night will end soon.",
+	"totem.death": "Death Totem",
+	"totem.death.activate": "%s's totem emitted a flash of light, revealing only the dead body of the %s.",
 	"totem.pacifism": "Pacifism Totem"
 }
