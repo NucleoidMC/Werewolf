@@ -217,9 +217,12 @@ public class WerewolfActivePhase {
 			this.sendMessage(new TranslatableText("action.lynch.announce.none").formatted(Formatting.DARK_GREEN));
 		} else if (possibleLynches.size() == 1) {
 			PlayerEntry toLynch = possibleLynches.get(0);
-			this.eliminate(toLynch);
-
-			this.sendMessage(new TranslatableText("action.lynch.announce", toLynch.getName(), toLynch.getLynchRoleName()).formatted(Formatting.DARK_GREEN));
+			if (toLynch.hasTotem(Totem.REVEALING)) {
+				this.sendMessage(new TranslatableText("action.lynch.announce.reveal", toLynch.getName(), toLynch.getLynchRoleName()).formatted(Formatting.DARK_GREEN));
+			} else {
+				this.eliminate(toLynch);
+				this.sendMessage(new TranslatableText("action.lynch.announce", toLynch.getName(), toLynch.getLynchRoleName()).formatted(Formatting.DARK_GREEN));
+			}
 		} else {
 			this.sendMessage(new TranslatableText("action.lynch.announce.tie").formatted(Formatting.DARK_GREEN));
 		}

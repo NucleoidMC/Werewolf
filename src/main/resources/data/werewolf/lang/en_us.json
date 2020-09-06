@@ -11,6 +11,7 @@
 	"action.kill.select": "You have chosen to kill %s.",
 	"action.lynch": "Lynch %s",
 	"action.lynch.announce": "After much debate, the villagers finally decide to lynch %s, who turned out to be a %s.",
+	"action.lynch.announce.reveal": "After much debate, the villagers finally decide to lynch %s. However, their totem emitted a flash of light, leaving a figure resembling a %s.",
 	"action.lynch.announce.abstain": "The majority voted to abstain from voting today, and therefore no players were lynched.",
 	"action.lynch.announce.none": "There were no votes, and therefore no players were lynched.",
 	"action.lynch.announce.tie": "The votes ended in a tie, and therefore no players were lynched.",
@@ -43,5 +44,6 @@
 	"timeCycle.night.warn": "The night will end soon.",
 	"totem.death": "Death Totem",
 	"totem.death.activate": "%s's totem emitted a flash of light, revealing only the dead body of the %s.",
-	"totem.pacifism": "Pacifism Totem"
+	"totem.pacifism": "Pacifism Totem",
+	"totem.revealing": "Revealing Totem"
 }
