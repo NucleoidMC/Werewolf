@@ -13,6 +13,7 @@ import io.github.haykam821.werewolf.game.role.Role;
 import io.github.haykam821.werewolf.game.role.Roles;
 import io.github.haykam821.werewolf.game.role.action.Action;
 import io.github.haykam821.werewolf.game.role.action.ActionQueueEntry;
+import io.github.haykam821.werewolf.game.role.action.Totem;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycleBar;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
@@ -162,6 +163,10 @@ public class WerewolfActivePhase {
 	}
 
 	public void addVote(PlayerEntry target) {
+		if (target.hasTotem(Totem.PACIFISM)) {
+			this.addAbstainVote();
+			return;
+		}
 		this.votes.addTo(target, 1);
 	}
 

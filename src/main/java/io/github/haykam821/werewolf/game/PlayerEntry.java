@@ -99,6 +99,10 @@ public class PlayerEntry {
 		this.actions.clear();
 	}
 
+	public boolean hasTotem(Totem totem) {
+		return this.totems.contains(totem);
+	}
+
 	public void putTotem(Totem totem) {
 		this.totems.add(totem);
 	}

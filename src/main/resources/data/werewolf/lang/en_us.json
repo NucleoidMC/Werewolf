@@ -41,5 +41,5 @@
 	"timeCycle.night": "Night",
 	"timeCycle.night.end": "The sun has risen, and it is now day.",
 	"timeCycle.night.warn": "The night will end soon.",
-	"totem.default": "Default Totem"
+	"totem.pacifism": "Pacifism Totem"
 }
