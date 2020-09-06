@@ -6,7 +6,6 @@ import io.github.haykam821.werewolf.game.PlayerEntry;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 
 public abstract class TargetAction extends Action {
 	private final PlayerEntry target;
@@ -32,11 +31,9 @@ public abstract class TargetAction extends Action {
 		Text targetName = this.getTarget().getName();
 
 		if (this.broadcastChoice) {
-			Text message = new TranslatableText(translationKey, user.getName(), targetName).formatted(Formatting.DARK_GREEN);
-			user.getPhase().sendMessage(message);
+			user.getPhase().sendGameMessage(translationKey, user.getName(), targetName);
 		} else {
-			Text message = new TranslatableText(translationKey, targetName).formatted(Formatting.DARK_GREEN);
-			user.sendMessage(message);
+			user.sendDirectMessage(translationKey, targetName);
 		}
 	}
 

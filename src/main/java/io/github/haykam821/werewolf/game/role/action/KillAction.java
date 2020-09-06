@@ -4,8 +4,6 @@ import io.github.haykam821.werewolf.game.PlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 
 public class KillAction extends TargetAction {
 	public KillAction(PlayerEntry target) {
@@ -16,8 +14,8 @@ public class KillAction extends TargetAction {
 	public void execute(PlayerEntry user) {
 		Text targetName = this.getTarget().getName();
 
-		user.sendMessage(new TranslatableText(this.getTranslationKey() + ".result", targetName).formatted(Formatting.DARK_GREEN));
-		user.getPhase().sendMessage(new TranslatableText(this.getTranslationKey() + ".announce", targetName).formatted(Formatting.DARK_GREEN));
+		user.sendDirectMessage(this.getTranslationKey() + ".result", targetName);
+		user.getPhase().sendGameMessage(this.getTranslationKey() + ".announce", targetName);
 
 		user.getPhase().eliminate(this.getTarget());
 	}

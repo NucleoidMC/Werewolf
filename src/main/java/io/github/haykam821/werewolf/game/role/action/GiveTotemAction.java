@@ -8,7 +8,6 @@ import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 
 public class GiveTotemAction extends TargetAction {
 	private final Totem totem;
@@ -20,12 +19,7 @@ public class GiveTotemAction extends TargetAction {
 
 	@Override
 	public void sendUseMessage(PlayerEntry user) {
-		String translationKey = this.getTranslationKey() + ".select";
-		Text targetName = this.getTarget().getName();
-		Text totemName = this.getTarget().getName();
-
-		Text message = new TranslatableText(translationKey, totemName, targetName).formatted(Formatting.DARK_GREEN);
-		user.sendMessage(message);
+		user.sendDirectMessage(this.getTranslationKey() + ".select", this.totem.getName(), this.getTarget().getName());
 	}
 
 	@Override
@@ -33,10 +27,10 @@ public class GiveTotemAction extends TargetAction {
 		this.getTarget().putTotem(this.totem);
 
 		Text targetName = this.getTarget().getName();
-		Text totemName = this.getTarget().getName();
+		Text totemName = this.totem.getName();
 
-		user.sendMessage(new TranslatableText(this.getTranslationKey() + ".result", totemName, targetName).formatted(Formatting.DARK_GREEN));
-		user.getPhase().sendMessage(new TranslatableText(this.getTranslationKey() + ".announce", targetName).formatted(Formatting.DARK_GREEN));
+		user.sendDirectMessage(this.getTranslationKey() + ".result", totemName, targetName);
+		user.getPhase().sendGameMessage(this.getTranslationKey() + ".announce", targetName);
 	}
 
 	@Override

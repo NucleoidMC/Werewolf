@@ -27,7 +27,7 @@ public class WolfRole extends Role {
 	}
 
 	@Override
-	public boolean hasWolfChat() {
+	public boolean canUseWolfChannel() {
 		return true;
 	}
 }

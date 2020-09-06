@@ -3,6 +3,8 @@ package io.github.haykam821.werewolf.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.haykam821.werewolf.game.channel.Channel;
+import io.github.haykam821.werewolf.game.channel.DirectChannel;
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
 import io.github.haykam821.werewolf.game.role.Role;
 import io.github.haykam821.werewolf.game.role.action.Action;
@@ -12,7 +14,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.util.BlockBounds;
@@ -25,12 +26,14 @@ public class PlayerEntry {
 	private boolean cursed;
 	private List<Action> actions = new ArrayList<>();
 	private final List<Totem> totems = new ArrayList<>();
+	private final Channel channel;
 
 	public PlayerEntry(WerewolfActivePhase phase, ServerPlayerEntity player, Role role, boolean cursed) {
 		this.phase = phase;
 		this.player = player;
 		this.role = role;
 		this.cursed = cursed;
+		this.channel = new DirectChannel(player);
 	}
 
 	public WerewolfActivePhase getPhase() {
@@ -73,7 +76,7 @@ public class PlayerEntry {
 		}
 
 		this.role = role;
-		this.sendMessage(new TranslatableText("text.werewolf.role.change", this.role.getName()).formatted(Formatting.BLUE));
+		this.sendDirectMessage("text.werewolf.role.change", this.role.getName());
 	}
 
 	public boolean isCursed() {
@@ -111,8 +114,8 @@ public class PlayerEntry {
 		this.totems.clear();
 	}
 
-	public void sendMessage(Text message) {
-		this.getPlayer().sendMessage(message, false);
+	public void sendDirectMessage(String key, Object... args) {
+		this.channel.sendMessage(key, args);
 	}
 
 	public void spawn(ServerWorld world, BlockBounds spawnBounds) {
@@ -122,7 +125,7 @@ public class PlayerEntry {
 		Vec3d spawn = spawnBounds.getCenter();
 		this.player.teleport(world, spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0);
 
-		this.sendMessage(new TranslatableText("text.werewolf.role.initial", this.role.getName()).formatted(Formatting.BLUE));
+		this.sendDirectMessage("text.werewolf.role.initial", this.role.getName());
 	}
 
 	public Text getLynchRoleName() {

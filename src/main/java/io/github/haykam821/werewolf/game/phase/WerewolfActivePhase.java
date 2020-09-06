@@ -7,6 +7,9 @@ import java.util.List;
 
 import io.github.haykam821.werewolf.game.PlayerEntry;
 import io.github.haykam821.werewolf.game.WerewolfConfig;
+import io.github.haykam821.werewolf.game.channel.Channel;
+import io.github.haykam821.werewolf.game.channel.GameChannel;
+import io.github.haykam821.werewolf.game.channel.WolfChannel;
 import io.github.haykam821.werewolf.game.map.WerewolfMap;
 import io.github.haykam821.werewolf.game.role.Alignment;
 import io.github.haykam821.werewolf.game.role.Role;
@@ -60,6 +63,9 @@ public class WerewolfActivePhase {
 	private int abstainVotes = 0;
 	private TimeCycleBar bar;
 
+	private final Channel gameChannel;
+	private final Channel wolfChannel;
+
 	public WerewolfActivePhase(GameWorld gameWorld, WerewolfMap map, WerewolfConfig config) {
 		this.gameWorld = gameWorld;
 		this.world = gameWorld.getWorld();
@@ -70,6 +76,9 @@ public class WerewolfActivePhase {
 		this.votes.defaultReturnValue(0);
 
 		this.bar = new TimeCycleBar(this);
+
+		this.gameChannel = new GameChannel(this.gameWorld.getPlayerSet());
+		this.wolfChannel = new WolfChannel(players);
 	}
 
 	public static void setRules(Game game) {
@@ -145,7 +154,7 @@ public class WerewolfActivePhase {
 		}
 
 		this.sendBreakdown(roleCounts);
-		this.sendWolfMessage(new TranslatableText("text.werewolf.chat.wolf.hint").formatted(Formatting.GRAY));
+		this.sendWolfMessage("channel.wolf.hint");
 	}
 
 	private void sendBreakdown(Object2IntLinkedOpenHashMap<Role> roleCounts) {
@@ -159,7 +168,7 @@ public class WerewolfActivePhase {
 				breakdown.append(new LiteralText("\n")).append(new TranslatableText(translationKey, role.getName(), FORMAT.format(count)));
 			}
 		}
-		this.gameWorld.getPlayerSet().sendMessage(breakdown.formatted(Formatting.GOLD));
+		this.sendGameMessage(breakdown.formatted(Formatting.GOLD));
 	}
 
 	public void addVote(PlayerEntry target) {
@@ -188,7 +197,7 @@ public class WerewolfActivePhase {
 			if (this.timeCycle == TimeCycle.NIGHT) {
 				entry.clearTotems();
 			} else if (entry.hasTotem(Totem.DEATH)) {
-				this.sendMessage(new TranslatableText("totem.death.activate", entry.getName(), entry.getLynchRoleName()).formatted(Formatting.DARK_GREEN));
+				this.sendGameMessage("totem.death.activate", entry.getName(), entry.getLynchRoleName());
 				this.eliminate(entry);
 			}
 		}
@@ -196,13 +205,13 @@ public class WerewolfActivePhase {
 
 	private void lynch() {
 		if (this.votes.size() == 0) {
-			this.sendMessage(new TranslatableText("action.lynch.announce.none").formatted(Formatting.DARK_GREEN));
+			this.sendGameMessage("action.lynch.announce.none");
 			return;
 		}
 
 		int maxVotes = Collections.max(this.votes.values());
 		if (this.abstainVotes >= maxVotes) {
-			this.sendMessage(new TranslatableText("action.lynch.announce.abstain").formatted(Formatting.DARK_GREEN));
+			this.sendGameMessage("action.lynch.announce.abstain");
 			return;
 		}
 
@@ -214,17 +223,17 @@ public class WerewolfActivePhase {
 		}
 
 		if (possibleLynches.size() == 0) {
-			this.sendMessage(new TranslatableText("action.lynch.announce.none").formatted(Formatting.DARK_GREEN));
+			this.sendGameMessage("action.lynch.announce.none");
 		} else if (possibleLynches.size() == 1) {
 			PlayerEntry toLynch = possibleLynches.get(0);
 			if (toLynch.hasTotem(Totem.REVEALING)) {
-				this.sendMessage(new TranslatableText("action.lynch.announce.reveal", toLynch.getName(), toLynch.getLynchRoleName()).formatted(Formatting.DARK_GREEN));
+				this.sendGameMessage("action.lynch.announce.reveal", toLynch.getName(), toLynch.getLynchRoleName());
 			} else {
 				this.eliminate(toLynch);
-				this.sendMessage(new TranslatableText("action.lynch.announce", toLynch.getName(), toLynch.getLynchRoleName()).formatted(Formatting.DARK_GREEN));
+				this.sendGameMessage("action.lynch.announce", toLynch.getName(), toLynch.getLynchRoleName());
 			}
 		} else {
-			this.sendMessage(new TranslatableText("action.lynch.announce.tie").formatted(Formatting.DARK_GREEN));
+			this.sendGameMessage("action.lynch.announce.tie");
 		}
 	}
 
@@ -285,9 +294,7 @@ public class WerewolfActivePhase {
 	}
 
 	private void endGameWithWinner(Alignment alignment) {
-		Text text = new TranslatableText("text.werewolf.end", alignment.getName()).formatted(Formatting.GOLD);
-		this.gameWorld.getPlayerSet().sendMessage(text);
-	
+		this.sendGameMessage("text.werewolf.end", alignment.getName());
 		this.endGame();
 	}
 
@@ -320,12 +327,12 @@ public class WerewolfActivePhase {
 		PlayerEntry entry = this.getEntryFromPlayer(sender);
 		if (entry == null) return ActionResult.SUCCESS;
 
-		if (!entry.getRole().hasWolfChat()) {
-			entry.sendMessage(new TranslatableText("text.werewolf.chat.wolf.denied").formatted(Formatting.RED));
+		if (!entry.getRole().canUseWolfChannel()) {
+			entry.sendDirectMessage("channel.wolf.denied");
 			return ActionResult.FAIL;
 		}
 
-		this.sendWolfMessage(sender, new LiteralText(message.substring(1)));
+		this.sendWolfMessage(new TranslatableText("chat.type.text", sender.getDisplayName(), message.substring(1)).formatted(Formatting.WHITE));
 		return ActionResult.FAIL;
 	}
 
@@ -392,20 +399,19 @@ public class WerewolfActivePhase {
 		return this.config;
 	}
 
-	public void sendMessage(Text message) {
-		this.gameWorld.getPlayerSet().sendMessage(message);
+	private void sendGameMessage(Text message) {
+		this.gameChannel.sendMessage(message);
 	}
 
-	public void sendWolfMessage(Text message) {
-		Text prefixedMessage = new TranslatableText("text.werewolf.chat.wolf", message).formatted(Formatting.DARK_GRAY);
-		for (PlayerEntry entry : this.players) {
-			if (entry.getRole().hasWolfChat()) {
-				entry.sendMessage(prefixedMessage);
-			}
-		}
+	public void sendGameMessage(String key, Object... args) {
+		this.gameChannel.sendMessage(key, args);
 	}
 
-	public void sendWolfMessage(ServerPlayerEntity sender, Text message) {
-		this.sendWolfMessage(new TranslatableText("chat.type.text", sender.getDisplayName(), message));
+	private void sendWolfMessage(Text message) {
+		this.wolfChannel.sendMessage(message, true);
+	}
+
+	public void sendWolfMessage(String key, Object... args) {
+		this.wolfChannel.sendMessage(key, args);
 	}
 }

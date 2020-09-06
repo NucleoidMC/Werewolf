@@ -114,7 +114,7 @@ public abstract class Role {
 		return this.getAlignment() != Alignment.WOLF;
 	}
 
-	public boolean hasWolfChat() {
+	public boolean canUseWolfChannel() {
 		return false;
 	}
 }
