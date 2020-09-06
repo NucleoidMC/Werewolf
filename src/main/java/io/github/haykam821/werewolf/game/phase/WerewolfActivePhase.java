@@ -263,9 +263,9 @@ public class WerewolfActivePhase {
 		}
 
 		if (alignmentCounts.getInt(Alignment.WOLF) == 0) {
-			this.endGameWithWinner(Alignment.WOLF);
-		} else if (alignmentCounts.getInt(Alignment.VILLAGER) == 0) {
 			this.endGameWithWinner(Alignment.VILLAGER);
+		} else if (alignmentCounts.getInt(Alignment.VILLAGER) == 0) {
+			this.endGameWithWinner(Alignment.WOLF);
 		}
 
 		// Switch early when all players have no more actions
