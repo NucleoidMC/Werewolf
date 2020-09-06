@@ -168,7 +168,7 @@ public class WerewolfActivePhase {
 				breakdown.append(new LiteralText("\n")).append(new TranslatableText(translationKey, role.getName(), FORMAT.format(count)));
 			}
 		}
-		this.sendGameMessage(breakdown.formatted(Formatting.GOLD));
+		this.sendGameMessage(breakdown);
 	}
 
 	public void addVote(PlayerEntry target) {

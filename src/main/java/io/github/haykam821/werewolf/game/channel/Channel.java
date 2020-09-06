@@ -36,7 +36,7 @@ public abstract class Channel {
 	}
 
 	public void sendMessage(Text message) {
-		this.sendMessage(message, false);
+		this.sendMessage(message, true);
 	}
 
 	public void sendMessage(String key, Object... args) {
