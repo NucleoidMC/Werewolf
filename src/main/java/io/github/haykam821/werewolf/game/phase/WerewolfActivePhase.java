@@ -7,9 +7,7 @@ import java.util.List;
 
 import io.github.haykam821.werewolf.game.PlayerEntry;
 import io.github.haykam821.werewolf.game.WerewolfConfig;
-import io.github.haykam821.werewolf.game.channel.Channel;
-import io.github.haykam821.werewolf.game.channel.GameChannel;
-import io.github.haykam821.werewolf.game.channel.WolfChannel;
+import io.github.haykam821.werewolf.game.channel.ChannelManager;
 import io.github.haykam821.werewolf.game.map.WerewolfMap;
 import io.github.haykam821.werewolf.game.role.Alignment;
 import io.github.haykam821.werewolf.game.role.Role;
@@ -59,12 +57,9 @@ public class WerewolfActivePhase {
 	private int ticksUntilSwitch;
 	private TimeCycle timeCycle = TimeCycle.NIGHT;
 	private final List<ActionQueueEntry> actionQueue = new ArrayList<>();
-	private final Object2IntLinkedOpenHashMap<PlayerEntry> votes = new Object2IntLinkedOpenHashMap<>();
-	private int abstainVotes = 0;
 	private TimeCycleBar bar;
-
-	private final Channel gameChannel;
-	private final Channel wolfChannel;
+	private final ChannelManager channelManager;
+	private final VoteManager voteManager;
 
 	public WerewolfActivePhase(GameWorld gameWorld, WerewolfMap map, WerewolfConfig config) {
 		this.gameWorld = gameWorld;
@@ -73,12 +68,10 @@ public class WerewolfActivePhase {
 		this.config = config;
 		this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
 
-		this.votes.defaultReturnValue(0);
 
 		this.bar = new TimeCycleBar(this);
-
-		this.gameChannel = new GameChannel(this.gameWorld.getPlayerSet());
-		this.wolfChannel = new WolfChannel(players);
+		this.voteManager = new VoteManager(this);
+		this.channelManager = new ChannelManager(this.gameWorld, this.players);
 	}
 
 	public static void setRules(Game game) {
@@ -171,18 +164,6 @@ public class WerewolfActivePhase {
 		this.sendGameMessage(breakdown);
 	}
 
-	public void addVote(PlayerEntry target) {
-		if (target.hasTotem(Totem.PACIFISM)) {
-			this.addAbstainVote();
-			return;
-		}
-		this.votes.addTo(target, 1);
-	}
-
-	public void addAbstainVote() {
-		this.abstainVotes += 1;
-	}
-
 	public void eliminate(PlayerEntry entry) {
 		entry.getRole().unapply(entry);
 		this.players.remove(entry);
@@ -203,66 +184,33 @@ public class WerewolfActivePhase {
 		}
 	}
 
-	private void lynch() {
-		if (this.votes.size() == 0) {
-			this.sendGameMessage("action.lynch.announce.none");
-			return;
+	private void resetAndCycleTime() {
+		this.voteManager.reset();
+		if (this.timeCycle == TimeCycle.DAY) {
+			this.voteManager.lynch();
 		}
 
-		int maxVotes = Collections.max(this.votes.values());
-		if (this.abstainVotes >= maxVotes) {
-			this.sendGameMessage("action.lynch.announce.abstain");
-			return;
+		this.actionQueue.sort(null);
+		for (ActionQueueEntry entry : this.actionQueue) {
+			entry.execute();
 		}
+		this.actionQueue.clear();
 
-		List<PlayerEntry> possibleLynches = new ArrayList<>();
-		for (Object2IntMap.Entry<PlayerEntry> entry : this.votes.object2IntEntrySet()) {
-			if (entry.getIntValue() == maxVotes) {
-				possibleLynches.add(entry.getKey());
-			}
-		}
+		// Switch time cycle
+		this.timeCycle = this.timeCycle == TimeCycle.NIGHT ? TimeCycle.DAY : TimeCycle.NIGHT;
+		this.reapplyAll();
 
-		if (possibleLynches.size() == 0) {
-			this.sendGameMessage("action.lynch.announce.none");
-		} else if (possibleLynches.size() == 1) {
-			PlayerEntry toLynch = possibleLynches.get(0);
-			if (toLynch.hasTotem(Totem.REVEALING)) {
-				this.sendGameMessage("action.lynch.announce.reveal", toLynch.getName(), toLynch.getLynchRoleName());
-			} else {
-				this.eliminate(toLynch);
-				this.sendGameMessage("action.lynch.announce", toLynch.getName(), toLynch.getLynchRoleName());
-			}
-		} else {
-			this.sendGameMessage("action.lynch.announce.tie");
-		}
+		this.bar.changeTimeCycle();
+		this.world.setTimeOfDay(this.timeCycle.getTimeOfDay());
+
+		this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
 	}
 
 	private void tick() {
 		if (this.ticksUntilSwitch <= 0) {
-			this.abstainVotes = 0;
-			this.votes.clear();
-
-			this.actionQueue.sort(null);
-			for (ActionQueueEntry entry : this.actionQueue) {
-				entry.execute();
-			}
-			this.actionQueue.clear();
-
-			if (this.timeCycle == TimeCycle.DAY) {
-				this.lynch();
-			}
-	
-			// Switch time cycle
-			this.timeCycle = this.timeCycle == TimeCycle.NIGHT ? TimeCycle.DAY : TimeCycle.NIGHT;
-			this.reapplyAll();
-
-			this.bar.changeTimeCycle();
-			this.world.setTimeOfDay(this.timeCycle.getTimeOfDay());
-
-			this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
+			this.resetAndCycleTime();
 		}
 		this.ticksUntilSwitch -= 1;
-
 		this.bar.tick();
 
 		Object2IntLinkedOpenHashMap<Alignment> alignmentCounts = new Object2IntLinkedOpenHashMap<>();
@@ -400,19 +348,23 @@ public class WerewolfActivePhase {
 		return this.config;
 	}
 
+	public VoteManager getVoteManager() {
+		return this.voteManager;
+	}
+
 	private void sendGameMessage(Text message) {
-		this.gameChannel.sendMessage(message);
+		this.channelManager.getGameChannel().sendMessage(message);
 	}
 
 	public void sendGameMessage(String key, Object... args) {
-		this.gameChannel.sendMessage(key, args);
+		this.channelManager.getGameChannel().sendMessage(key, args);
 	}
 
 	private void sendWolfMessage(Text message) {
-		this.wolfChannel.sendMessage(message, true);
+		this.channelManager.getWolfChannel().sendMessage(message, true);
 	}
 
 	public void sendWolfMessage(String key, Object... args) {
-		this.wolfChannel.sendMessage(key, args);
+		this.channelManager.getWolfChannel().sendMessage(key, args);
 	}
 }

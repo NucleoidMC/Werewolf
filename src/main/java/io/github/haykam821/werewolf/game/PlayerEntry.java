@@ -141,6 +141,21 @@ public class PlayerEntry {
 		return this.getPlayer().getDisplayName();
 	}
 
+	public void onTimeCycleChanged(TimeCycle oldTimeCycle) {
+
+	}
+
+	public void onLynched() {
+		// Prevent lynch via reveal
+		if (this.hasTotem(Totem.REVEALING)) {
+			this.phase.sendGameMessage("action.lynch.announce.reveal", this.getName(), this.getLynchRoleName());
+			return;
+		}
+
+		this.phase.eliminate(this);
+		this.phase.sendGameMessage("action.lynch.announce", this.getName(), this.getLynchRoleName());
+	}
+
 	@Override
 	public String toString() {
 		return "PlayerEntry{player=" + this.player + ", role=" + this.role + ", remainingActions=" + this.remainingActions + "}";

@@ -13,7 +13,7 @@ public class AbstainAction extends Action {
 
 	@Override
 	public void execute(PlayerEntry user) {
-		user.getPhase().addAbstainVote();
+		user.getPhase().getVoteManager().addAbstainVote();
 	}
 
 	@Override
