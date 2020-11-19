@@ -33,5 +33,12 @@ public abstract class Action {
 		return new ArrayList<>();
 	}
 
+	/**
+	 * Whether the action should be kept even when a player has a {@linkplain Totem.SILENCE silence totem}.
+	 */
+	public boolean isNormal() {
+		return false;
+	}
+
 	public abstract ItemStack getDisplayStack(PlayerEntry user);
 }

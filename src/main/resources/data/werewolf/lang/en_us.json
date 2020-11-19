@@ -49,5 +49,6 @@
 	"totem.death": "Death Totem",
 	"totem.death.activate": "%s's totem emitted a flash of light, revealing only the dead body of the %s.",
 	"totem.pacifism": "Pacifism Totem",
-	"totem.revealing": "Revealing Totem"
+	"totem.revealing": "Revealing Totem",
+	"totem.silence": "Silence Totem"
 }

@@ -95,6 +95,9 @@ public class PlayerEntry {
 	}
 
 	public void putAction(Action action) {
+		if (!action.isNormal() && this.hasTotem(Totem.SILENCE)) {
+			return;
+		}
 		this.actions.add(action);
 	}
 

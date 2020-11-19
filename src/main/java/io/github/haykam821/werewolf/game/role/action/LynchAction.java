@@ -23,4 +23,9 @@ public class LynchAction extends TargetAction {
 	public String getTranslationKey() {
 		return "action.lynch";
 	}
+
+	@Override
+	public boolean isNormal() {
+		return true;
+	}
 }

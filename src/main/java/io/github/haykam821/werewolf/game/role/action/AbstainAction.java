@@ -25,4 +25,9 @@ public class AbstainAction extends Action {
 	public String getTranslationKey() {
 		return "action.abstain";
 	}
+
+	@Override
+	public boolean isNormal() {
+		return true;
+	}
 }
