@@ -1,12 +1,12 @@
 package io.github.haykam821.werewolf.game.role.action;
 
-import io.github.haykam821.werewolf.game.PlayerEntry;
+import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 
 public class ActionQueueEntry implements Comparable<ActionQueueEntry> {
 	private final Action action;
-	private final PlayerEntry user;
+	private final AbstractPlayerEntry user;
 
-	public ActionQueueEntry(Action action, PlayerEntry user) {
+	public ActionQueueEntry(Action action, AbstractPlayerEntry user) {
 		this.action = action;
 		this.user = user;
 	}

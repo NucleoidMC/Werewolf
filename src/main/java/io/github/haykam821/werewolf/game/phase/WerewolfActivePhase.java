@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.github.haykam821.werewolf.game.PlayerEntry;
 import io.github.haykam821.werewolf.game.WerewolfConfig;
 import io.github.haykam821.werewolf.game.channel.ChannelManager;
 import io.github.haykam821.werewolf.game.map.WerewolfMap;
+import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
+import io.github.haykam821.werewolf.game.player.PlayerEntry;
 import io.github.haykam821.werewolf.game.role.Alignment;
 import io.github.haykam821.werewolf.game.role.Role;
 import io.github.haykam821.werewolf.game.role.Roles;
@@ -53,7 +54,7 @@ public class WerewolfActivePhase {
 	private final ServerWorld world;
 	private final WerewolfMap map;
 	private final WerewolfConfig config;
-	private final List<PlayerEntry> players = new ArrayList<>();
+	private final List<AbstractPlayerEntry> players = new ArrayList<>();
 	private int ticksUntilSwitch;
 	private TimeCycle timeCycle = TimeCycle.NIGHT;
 	private final List<ActionQueueEntry> actionQueue = new ArrayList<>();
@@ -134,14 +135,12 @@ public class WerewolfActivePhase {
 			roleCounts.addTo(role, 1);
 
 			boolean cursed = role.canBeCursed() && this.isCursedByIndex(index);
-
-			PlayerEntry entry = new PlayerEntry(this, player, role, cursed);
-			this.players.add(entry);
+			this.players.add(new PlayerEntry(this, player, role, cursed));
 
 			index += 1;
 		}
 
-		for (PlayerEntry entry : this.players) { 
+		for (AbstractPlayerEntry entry : this.players) { 
 			entry.resetRemainingActions();
 			entry.spawn(world, this.map.getSpawn());
 		}
@@ -164,16 +163,20 @@ public class WerewolfActivePhase {
 		this.sendGameMessage(breakdown);
 	}
 
-	public void eliminate(PlayerEntry entry) {
-		entry.getRole().unapply(entry);
+	public void eliminate(AbstractPlayerEntry entry) {
+		if (entry instanceof PlayerEntry) {
+			entry.getRole().unapply((PlayerEntry) entry);
+			this.setSpectator(((PlayerEntry) entry).getPlayer());
+		}
 		this.players.remove(entry);
-		this.setSpectator(entry.getPlayer());
 	}
 
 	private void reapplyAll() {
-		for (PlayerEntry entry : this.players) {
+		for (AbstractPlayerEntry entry : this.players) {
 			entry.resetRemainingActions();
-			entry.getRole().reapply(entry);
+			if (entry instanceof PlayerEntry) {
+				entry.getRole().reapply((PlayerEntry) entry);
+			}
 
 			if (this.timeCycle == TimeCycle.NIGHT) {
 				entry.clearTotems();
@@ -218,7 +221,7 @@ public class WerewolfActivePhase {
 
 		boolean finished = true;
 
-		for (PlayerEntry entry : this.players) {
+		for (AbstractPlayerEntry entry : this.players) {
 			if (entry.getRemainingActions() > 0) {
 				finished = false;
 			}
@@ -250,9 +253,9 @@ public class WerewolfActivePhase {
 		player.setGameMode(GameMode.SPECTATOR);
 	}
 
-	private PlayerEntry getEntryFromPlayer(ServerPlayerEntity player) {
-		for (PlayerEntry entry : this.players) {
-			if (player.equals(entry.getPlayer())) {
+	private AbstractPlayerEntry getEntryFromPlayer(ServerPlayerEntity player) {
+		for (AbstractPlayerEntry entry : this.players) {
+			if (entry instanceof PlayerEntry && player.equals(((PlayerEntry) entry).getPlayer())) {
 				return entry;
 			}
 		}
@@ -272,7 +275,7 @@ public class WerewolfActivePhase {
 		if (message.length() == 0) return ActionResult.SUCCESS;
 		if (message.charAt(0) != '#') return ActionResult.SUCCESS;
 		
-		PlayerEntry entry = this.getEntryFromPlayer(sender);
+		AbstractPlayerEntry entry = this.getEntryFromPlayer(sender);
 		if (entry == null) return ActionResult.SUCCESS;
 
 		if (!entry.getRole().canUseWolfChannel()) {
@@ -300,7 +303,7 @@ public class WerewolfActivePhase {
 	}
 
 	private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
-		PlayerEntry entry = this.getEntryFromPlayer(player);
+		AbstractPlayerEntry entry = this.getEntryFromPlayer(player);
 		if (entry != null) {
 			entry.spawn(this.world, this.map.getSpawn());
 		}
@@ -311,7 +314,7 @@ public class WerewolfActivePhase {
 	private TypedActionResult<ItemStack> onUseItem(ServerPlayerEntity player, Hand hand) {
 		ItemStack stack = player.getStackInHand(hand);
 
-		PlayerEntry entry = this.getEntryFromPlayer(player);
+		AbstractPlayerEntry entry = this.getEntryFromPlayer(player);
 		if (entry != null) {
 			Action action = entry.getAction(stack.getTag().getInt("ActionIndex"));
 			if (action != null) {
@@ -323,16 +326,18 @@ public class WerewolfActivePhase {
 		return TypedActionResult.pass(stack);
 	}
 
-	public void queueAction(Action action, PlayerEntry user) {
+	public void queueAction(Action action, AbstractPlayerEntry user) {
 		this.actionQueue.add(new ActionQueueEntry(action, user));
-		user.getRole().reapply(user);
+		if (user instanceof PlayerEntry) {
+			user.getRole().reapply((PlayerEntry) user);
+		}
 	}
 
 	public GameWorld getGameWorld() {
 		return this.gameWorld;
 	}
 
-	public List<PlayerEntry> getPlayers() {
+	public List<AbstractPlayerEntry> getPlayers() {
 		return this.players;
 	}
 

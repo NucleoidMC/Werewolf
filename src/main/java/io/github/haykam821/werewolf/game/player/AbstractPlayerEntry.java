@@ -1,47 +1,34 @@
-package io.github.haykam821.werewolf.game;
+package io.github.haykam821.werewolf.game.player;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.haykam821.werewolf.game.channel.Channel;
-import io.github.haykam821.werewolf.game.channel.DirectChannel;
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
 import io.github.haykam821.werewolf.game.role.Role;
 import io.github.haykam821.werewolf.game.role.action.Action;
 import io.github.haykam821.werewolf.game.role.action.Totem;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.util.BlockBounds;
 
-public class PlayerEntry {
+public abstract class AbstractPlayerEntry {
 	private final WerewolfActivePhase phase;
-	private final ServerPlayerEntity player;
-	private int remainingActions;
-	private Role role;
+	protected int remainingActions;
+	protected Role role;
 	private boolean cursed;
 	private List<Action> actions = new ArrayList<>();
 	private final List<Totem> totems = new ArrayList<>();
-	private final Channel channel;
 
-	public PlayerEntry(WerewolfActivePhase phase, ServerPlayerEntity player, Role role, boolean cursed) {
+	public AbstractPlayerEntry(WerewolfActivePhase phase, Role role, boolean cursed) {
 		this.phase = phase;
-		this.player = player;
 		this.role = role;
 		this.cursed = cursed;
-		this.channel = new DirectChannel(player);
 	}
 
 	public WerewolfActivePhase getPhase() {
 		return this.phase;
-	}
-
-	public ServerPlayerEntity getPlayer() {
-		return this.player;
 	}
 
 	public int getRemainingActions() {
@@ -69,8 +56,6 @@ public class PlayerEntry {
 	}
 
 	public void changeRole(Role role) {
-		this.role.reapply(this);
-
 		if (!role.canBeCursed()) {
 			this.cursed = false;
 		}
@@ -117,18 +102,10 @@ public class PlayerEntry {
 		this.totems.clear();
 	}
 
-	public void sendDirectMessage(String key, Object... args) {
-		this.channel.sendMessage(key, args);
-	}
+	public abstract void sendDirectMessage(String key, Object... args);
 
 	public void spawn(ServerWorld world, BlockBounds spawnBounds) {
-		this.player.setGameMode(GameMode.ADVENTURE);
-		this.role.reapply(this);
-
-		Vec3d spawn = spawnBounds.getCenter();
-		this.player.teleport(world, spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0);
-
-		this.sendDirectMessage("text.werewolf.role.initial", this.role.getName());
+		return;
 	}
 
 	public Text getLynchRoleName() {
@@ -140,9 +117,7 @@ public class PlayerEntry {
 		return roleName;
 	}
 
-	public Text getName() {
-		return this.getPlayer().getDisplayName();
-	}
+	public abstract Text getName();
 
 	public void onTimeCycleChanged(TimeCycle oldTimeCycle) {
 
@@ -161,6 +136,6 @@ public class PlayerEntry {
 
 	@Override
 	public String toString() {
-		return "PlayerEntry{player=" + this.player + ", role=" + this.role + ", remainingActions=" + this.remainingActions + "}";
+		return "AbstractPlayerEntry{role=" + this.role + ", remainingActions=" + this.remainingActions + "}";
 	}
 }

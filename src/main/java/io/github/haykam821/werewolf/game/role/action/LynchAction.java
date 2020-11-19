@@ -1,21 +1,21 @@
 package io.github.haykam821.werewolf.game.role.action;
 
-import io.github.haykam821.werewolf.game.PlayerEntry;
+import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 public class LynchAction extends TargetAction {
-	public LynchAction(PlayerEntry target) {
+	public LynchAction(AbstractPlayerEntry target) {
 		super(target, true);
 	}
 
 	@Override
-	public void execute(PlayerEntry user) {
+	public void execute(AbstractPlayerEntry user) {
 		user.getPhase().getVoteManager().addVote(this.getTarget());
 	}
 
 	@Override
-	public ItemStack getDisplayStack(PlayerEntry user) {
+	public ItemStack getDisplayStack(AbstractPlayerEntry user) {
 		return new ItemStack(Items.LEAD);
 	}
 

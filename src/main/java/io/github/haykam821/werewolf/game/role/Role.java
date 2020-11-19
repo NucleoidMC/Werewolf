@@ -3,7 +3,8 @@ package io.github.haykam821.werewolf.game.role;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.haykam821.werewolf.game.PlayerEntry;
+import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
+import io.github.haykam821.werewolf.game.player.PlayerEntry;
 import io.github.haykam821.werewolf.game.role.action.AbstainAction;
 import io.github.haykam821.werewolf.game.role.action.Action;
 import io.github.haykam821.werewolf.game.role.action.LynchAction;
@@ -32,20 +33,20 @@ public abstract class Role {
 		return new TranslatableText(this.getTranslationKey());
 	}
 
-	public void unapply(PlayerEntry entry) {
-		entry.getPlayer().inventory.clear();
+	public void unapply(AbstractPlayerEntry entry) {
+		if (entry instanceof PlayerEntry) {
+			((PlayerEntry) entry).getPlayer().inventory.clear();
+		}
 		entry.clearActions();
 	}
 
-	private List<Action> getActions(PlayerEntry entry) {
+	private List<Action> getActions(AbstractPlayerEntry entry) {
 		TimeCycle timeCycle = entry.getPhase().getTimeCycle();
 		return timeCycle == TimeCycle.NIGHT ? this.getNightActions(entry) : this.getDayActions(entry);
 	}
 
-	public void apply(PlayerEntry entry) {
+	public void apply(AbstractPlayerEntry entry) {
 		if (entry.getRemainingActions() <= 0) return;
-
-		ServerPlayerEntity player = entry.getPlayer();
 
 		List<Action> actions = this.getActions(entry);
 		if (actions.size() < entry.getRemainingActions()) {
@@ -53,6 +54,7 @@ public abstract class Role {
 		}
 
 		int index = 0;
+		List<ItemStack> stacks = new ArrayList<>();
 		for (Action action : actions) {
 			ItemStackBuilder builder = ItemStackBuilder.of(action.getDisplayStack(entry)).setName(action.getName());
 			for (Text lore : action.getLore()) {
@@ -63,31 +65,41 @@ public abstract class Role {
 			stack.getTag().putInt("ActionIndex", index);
 
 			entry.putAction(action);
-			player.inventory.setStack(index, stack);
+			stacks.add(stack);
 
 			index += 1;
 		}
 
-		// Update inventory
-		player.currentScreenHandler.sendContentUpdates();
-		player.playerScreenHandler.onContentChanged(player.inventory);
-		player.updateCursorStack();
+		if (entry instanceof PlayerEntry) {
+			ServerPlayerEntity player = ((PlayerEntry) entry).getPlayer();
+
+			int slot = 0;
+			for (ItemStack stack : stacks) {
+				player.inventory.setStack(slot, stack);
+				index += 1;
+			}
+
+			// Update inventory
+			player.currentScreenHandler.sendContentUpdates();
+			player.playerScreenHandler.onContentChanged(player.inventory);
+			player.updateCursorStack();
+		}
 	}
 
-	public void reapply(PlayerEntry entry) {
+	public void reapply(AbstractPlayerEntry entry) {
 		this.unapply(entry);
 		this.apply(entry);
 	}
 
-	public int getMaxDayActions(PlayerEntry user) {
+	public int getMaxDayActions(AbstractPlayerEntry user) {
 		return 1;
 	}
 
-	public List<Action> getDayActions(PlayerEntry user) {
+	public List<Action> getDayActions(AbstractPlayerEntry user) {
 		List<Action> actions = new ArrayList<>();
 		actions.add(new AbstainAction());
 
-		for (PlayerEntry entry : user.getPhase().getPlayers()) {
+		for (AbstractPlayerEntry entry : user.getPhase().getPlayers()) {
 			if (!user.equals(entry)) {
 				actions.add(new LynchAction(entry));
 			}
@@ -96,17 +108,17 @@ public abstract class Role {
 		return actions;
 	}
 
-	public int getMaxNightActions(PlayerEntry user) {
+	public int getMaxNightActions(AbstractPlayerEntry user) {
 		return 1;
 	}
 
-	public List<Action> getNightActions(PlayerEntry user) {
+	public List<Action> getNightActions(AbstractPlayerEntry user) {
 		return new ArrayList<>();
 	}
 
 	public abstract Alignment getAlignment();
 
-	public Role getSeenRole(PlayerEntry entry) {
+	public Role getSeenRole(AbstractPlayerEntry entry) {
 		return entry.isCursed() ? Roles.WOLF.getRole() : this;
 	}
 

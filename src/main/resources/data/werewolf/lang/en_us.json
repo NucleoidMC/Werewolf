@@ -35,6 +35,7 @@
 	"role.werewolf.wolf": "Wolf",
 	"text.werewolf.cursed": "Cursed",
 	"text.werewolf.end": "The %s team won the game.",
+	"text.werewolf.fake_player": "Fake Player %s",
 	"text.werewolf.role.breakdown.header": "The following roles are present:",
 	"text.werewolf.role.breakdown.plural": "- %s: %s players",
 	"text.werewolf.role.breakdown.single": "- %s: %s player",

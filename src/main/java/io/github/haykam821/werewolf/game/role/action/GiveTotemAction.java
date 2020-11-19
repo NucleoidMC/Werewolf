@@ -2,7 +2,7 @@ package io.github.haykam821.werewolf.game.role.action;
 
 import java.util.List;
 
-import io.github.haykam821.werewolf.game.PlayerEntry;
+import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
@@ -12,18 +12,18 @@ import net.minecraft.text.TranslatableText;
 public class GiveTotemAction extends TargetAction {
 	private final Totem totem;
 
-	public GiveTotemAction(PlayerEntry target, Totem totem) {
+	public GiveTotemAction(AbstractPlayerEntry target, Totem totem) {
 		super(target, false);
 		this.totem = totem;
 	}
 
 	@Override
-	public void sendUseMessage(PlayerEntry user) {
+	public void sendUseMessage(AbstractPlayerEntry user) {
 		user.sendDirectMessage(this.getTranslationKey() + ".select", this.totem.getName(), this.getTarget().getName());
 	}
 
 	@Override
-	public void execute(PlayerEntry user) {
+	public void execute(AbstractPlayerEntry user) {
 		this.getTarget().putTotem(this.totem);
 
 		Text targetName = this.getTarget().getName();
@@ -39,7 +39,7 @@ public class GiveTotemAction extends TargetAction {
 	}
 
 	@Override
-	public ItemStack getDisplayStack(PlayerEntry user) {
+	public ItemStack getDisplayStack(AbstractPlayerEntry user) {
 		return new ItemStack(Items.TOTEM_OF_UNDYING);
 	}
 

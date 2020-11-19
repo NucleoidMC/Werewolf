@@ -2,11 +2,11 @@ package io.github.haykam821.werewolf.game.channel;
 
 import java.util.List;
 
-import io.github.haykam821.werewolf.game.PlayerEntry;
+import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import net.minecraft.util.Formatting;
 
 public class WolfChannel extends FilteredChannel {
-	public WolfChannel(List<PlayerEntry> players) {
+	public WolfChannel(List<AbstractPlayerEntry> players) {
 		super(players, entry -> {
 			return entry.getRole().canUseWolfChannel();
 		});

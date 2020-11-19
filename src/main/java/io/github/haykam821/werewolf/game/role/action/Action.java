@@ -3,20 +3,24 @@ package io.github.haykam821.werewolf.game.role.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.haykam821.werewolf.game.PlayerEntry;
+import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
+import io.github.haykam821.werewolf.game.player.PlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public abstract class Action {
-	public void execute(PlayerEntry user) {
+	public void execute(AbstractPlayerEntry user) {
 		return;
 	}
 
-	public void use(PlayerEntry user) {
+	public void use(AbstractPlayerEntry user) {
 		user.getPhase().queueAction(this, user);
 		user.decrementRemainingActions();
-		user.getRole().reapply(user);
+
+		if (user instanceof PlayerEntry) {
+			user.getRole().reapply((PlayerEntry) user);
+		}
 	}
 
 	public int getPriority() {
@@ -40,5 +44,5 @@ public abstract class Action {
 		return false;
 	}
 
-	public abstract ItemStack getDisplayStack(PlayerEntry user);
+	public abstract ItemStack getDisplayStack(AbstractPlayerEntry user);
 }

@@ -1,6 +1,6 @@
 package io.github.haykam821.werewolf.game.role;
 
-import io.github.haykam821.werewolf.game.PlayerEntry;
+import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 
 public class CultistRole extends Role {
 	@Override
@@ -9,7 +9,7 @@ public class CultistRole extends Role {
 	}
 
 	@Override
-	public Role getSeenRole(PlayerEntry entry) {
+	public Role getSeenRole(AbstractPlayerEntry entry) {
 		return Roles.VILLAGER.getRole();
 	}
 }
