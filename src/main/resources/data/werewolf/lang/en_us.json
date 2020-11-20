@@ -47,6 +47,8 @@
 	"text.werewolf.role.breakdown.single": "- %s: %s player",
 	"text.werewolf.role.change": "You are now a %s.",
 	"text.werewolf.role.initial": "You are a %s.",
+	"text.werewolf.wolves_overpower": "The wolves managed to overpower the villagers!",
+	"text.werewolf.wolves_overpower.single": "The wolf managed to overpower the villagers!",
 	"timeCycle.day": "Day",
 	"timeCycle.day.end": "The sun has set, and it is now night.",
 	"timeCycle.day.warn": "The day will end soon.",

@@ -239,9 +239,11 @@ public class WerewolfActivePhase {
 			alignmentCounts.addTo(entry.getRole().getAlignment(), 1);
 		}
 
-		if (alignmentCounts.getInt(Alignment.WOLF) == 0) {
+		int wolfCount = alignmentCounts.getInt(Alignment.WOLF);
+		if (wolfCount == 0) {
 			this.endGameWithWinner(Alignment.VILLAGER);
-		} else if (alignmentCounts.getInt(Alignment.VILLAGER) == 0) {
+		} else if (wolfCount >= alignmentCounts.getInt(Alignment.VILLAGER)) {
+			this.sendGameMessage("text.werewolf.wolves_overpower" + (wolfCount == 1 ? ".single" : ""));
 			this.endGameWithWinner(Alignment.WOLF);
 		}
 
