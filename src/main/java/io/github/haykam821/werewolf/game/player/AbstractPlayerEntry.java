@@ -31,6 +31,10 @@ public abstract class AbstractPlayerEntry {
 		return this.phase;
 	}
 
+	public List<Action> getActions() {
+		return this.actions;
+	}
+
 	public int getRemainingActions() {
 		return this.remainingActions;
 	}

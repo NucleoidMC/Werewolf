@@ -76,7 +76,7 @@ public abstract class Role {
 			int slot = 0;
 			for (ItemStack stack : stacks) {
 				player.inventory.setStack(slot, stack);
-				index += 1;
+				slot += 1;
 			}
 
 			// Update inventory

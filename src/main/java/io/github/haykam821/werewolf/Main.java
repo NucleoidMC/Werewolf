@@ -4,6 +4,7 @@ import io.github.haykam821.werewolf.game.WerewolfConfig;
 import io.github.haykam821.werewolf.game.phase.WerewolfWaitingPhase;
 import io.github.haykam821.werewolf.game.role.Roles;
 import io.github.haykam821.werewolf.game.role.RolesCommand;
+import io.github.haykam821.werewolf.game.role.action.ActionsCommand;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.tag.TagRegistry;
@@ -25,6 +26,7 @@ public class Main implements ModInitializer {
 	public void onInitialize() {
 		Roles.initialize();
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+			ActionsCommand.register(dispatcher);
 			RolesCommand.register(dispatcher);
 		});
 	}

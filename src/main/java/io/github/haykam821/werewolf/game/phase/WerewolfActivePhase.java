@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.github.haykam821.werewolf.game.WerewolfConfig;
 import io.github.haykam821.werewolf.game.channel.ChannelManager;
+import io.github.haykam821.werewolf.game.event.PlayerEntryObtainer;
 import io.github.haykam821.werewolf.game.map.WerewolfMap;
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import io.github.haykam821.werewolf.game.player.PlayerEntry;
@@ -98,6 +99,7 @@ public class WerewolfActivePhase {
 			game.on(PlayerDamageListener.EVENT, phase::onPlayerDamage);
 			game.on(PlayerDeathListener.EVENT, phase::onPlayerDeath);
 			game.on(UseItemListener.EVENT, phase::onUseItem);
+			game.on(PlayerEntryObtainer.EVENT, phase::getEntryFromPlayer);
 		});
 	}
 
@@ -328,6 +330,7 @@ public class WerewolfActivePhase {
 
 	public void queueAction(Action action, AbstractPlayerEntry user) {
 		this.actionQueue.add(new ActionQueueEntry(action, user));
+		user.decrementRemainingActions();
 		if (user instanceof PlayerEntry) {
 			user.getRole().reapply((PlayerEntry) user);
 		}

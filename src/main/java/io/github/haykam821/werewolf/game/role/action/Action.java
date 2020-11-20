@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
-import io.github.haykam821.werewolf.game.player.PlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -16,11 +15,6 @@ public abstract class Action {
 
 	public void use(AbstractPlayerEntry user) {
 		user.getPhase().queueAction(this, user);
-		user.decrementRemainingActions();
-
-		if (user instanceof PlayerEntry) {
-			user.getRole().reapply((PlayerEntry) user);
-		}
 	}
 
 	public int getPriority() {
