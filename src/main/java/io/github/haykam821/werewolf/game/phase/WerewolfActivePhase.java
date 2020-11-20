@@ -199,16 +199,16 @@ public class WerewolfActivePhase {
 	}
 
 	private void resetAndCycleTime() {
-		this.voteManager.reset();
-		if (this.timeCycle == TimeCycle.DAY) {
-			this.voteManager.lynch();
-		}
-
 		this.actionQueue.sort(null);
 		for (ActionQueueEntry entry : this.actionQueue) {
 			entry.execute();
 		}
 		this.actionQueue.clear();
+
+		if (this.timeCycle == TimeCycle.DAY) {
+			this.voteManager.lynch();
+		}
+		this.voteManager.reset();
 
 		// Switch time cycle
 		this.timeCycle = this.timeCycle == TimeCycle.NIGHT ? TimeCycle.DAY : TimeCycle.NIGHT;
@@ -326,7 +326,7 @@ public class WerewolfActivePhase {
 		ItemStack stack = player.getStackInHand(hand);
 
 		AbstractPlayerEntry entry = this.getEntryFromPlayer(player);
-		if (entry != null) {
+		if (entry != null && stack.hasTag()) {
 			Action action = entry.getAction(stack.getTag().getInt("ActionIndex"));
 			if (action != null) {
 				action.use(entry);

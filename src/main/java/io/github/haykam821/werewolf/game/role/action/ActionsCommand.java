@@ -128,7 +128,7 @@ public class ActionsCommand {
 			return 1;
 		}
 
-		entry.getPhase().queueAction(action, entry);
+		action.use(entry);
 		context.getSource().sendFeedback(new TranslatableText("command.werewolf.actions.queue.success"), true);
 		return 0;
 	}

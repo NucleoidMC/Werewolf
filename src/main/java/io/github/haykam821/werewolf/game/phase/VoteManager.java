@@ -60,7 +60,7 @@ public class VoteManager {
 
 	public void lynch() {
 		if (this.votes.size() == 0) {
-			this.phase.sendGameMessage("action.lynch.announce.none");
+			this.phase.sendGameMessage(this.abstainVotes > 0 ? "action.lynch.announce.abstain" : "action.lynch.announce.none");
 			return;
 		}
 
