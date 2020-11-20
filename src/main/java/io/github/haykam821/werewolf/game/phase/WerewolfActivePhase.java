@@ -3,6 +3,7 @@ package io.github.haykam821.werewolf.game.phase;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import io.github.haykam821.werewolf.game.WerewolfConfig;
@@ -165,16 +166,23 @@ public class WerewolfActivePhase {
 		this.sendGameMessage(breakdown);
 	}
 
-	public void eliminate(AbstractPlayerEntry entry) {
+	private void eliminateWithoutRemoval(AbstractPlayerEntry entry) {
 		if (entry instanceof PlayerEntry) {
 			entry.getRole().unapply((PlayerEntry) entry);
 			this.setSpectator(((PlayerEntry) entry).getPlayer());
 		}
+	}
+
+	public void eliminate(AbstractPlayerEntry entry) {
+		this.eliminateWithoutRemoval(entry);
 		this.players.remove(entry);
 	}
 
 	private void reapplyAll() {
-		for (AbstractPlayerEntry entry : this.players) {
+		Iterator<AbstractPlayerEntry> iterator = this.players.iterator();
+		while (iterator.hasNext()) {
+			AbstractPlayerEntry entry = iterator.next();
+
 			entry.resetRemainingActions();
 			if (entry instanceof PlayerEntry) {
 				entry.getRole().reapply((PlayerEntry) entry);
@@ -184,7 +192,8 @@ public class WerewolfActivePhase {
 				entry.clearTotems();
 			} else if (entry.hasTotem(Totem.DEATH)) {
 				this.sendGameMessage("totem.death.activate", entry.getName(), entry.getLynchRoleName());
-				this.eliminate(entry);
+				this.eliminateWithoutRemoval(entry);
+				iterator.remove();
 			}
 		}
 	}
