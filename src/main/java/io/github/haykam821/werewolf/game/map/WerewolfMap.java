@@ -3,10 +3,9 @@ package io.github.haykam821.werewolf.game.map;
 import java.util.Set;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import xyz.nucleoid.plasmid.game.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.game.map.template.TemplateChunkGenerator;
+import xyz.nucleoid.plasmid.map.template.MapTemplate;
+import xyz.nucleoid.plasmid.map.template.TemplateChunkGenerator;
 import xyz.nucleoid.plasmid.util.BlockBounds;
 
 public class WerewolfMap {
@@ -29,6 +28,6 @@ public class WerewolfMap {
 	}
 
 	public ChunkGenerator createGenerator(MinecraftServer server) {
-		return new TemplateChunkGenerator(server, this.template, BlockPos.ORIGIN);
+		return new TemplateChunkGenerator(server, this.template);
 	}
 }

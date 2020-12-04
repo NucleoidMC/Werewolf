@@ -5,6 +5,7 @@ import net.minecraft.entity.boss.BossBar;
 import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
 import xyz.nucleoid.plasmid.widget.BossBarWidget;
+import xyz.nucleoid.plasmid.widget.GlobalWidgets;
 
 public class TimeCycleBar implements Tickable {
 	private static final BossBar.Style STYLE = BossBar.Style.PROGRESS;
@@ -12,11 +13,9 @@ public class TimeCycleBar implements Tickable {
 	private final WerewolfActivePhase phase;
 	private final BossBarWidget widget;
 
-	public TimeCycleBar(WerewolfActivePhase phase) {
+	public TimeCycleBar(WerewolfActivePhase phase, GlobalWidgets widgets) {
 		this.phase = phase;
-
-		this.widget = BossBarWidget.open(this.phase.getGameWorld().getPlayerSet(), this.getTitle(), this.getColor(), STYLE);
-		this.phase.getGameWorld().addResource(this.widget);
+		this.widget = widgets.addBossBar(this.getTitle(), this.getColor(), STYLE);
 	}
 
 	@Override

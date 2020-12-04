@@ -37,8 +37,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import xyz.nucleoid.plasmid.game.Game;
-import xyz.nucleoid.plasmid.game.GameWorld;
+import xyz.nucleoid.plasmid.game.GameCloseReason;
+import xyz.nucleoid.plasmid.game.GameLogic;
+import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.event.GameOpenListener;
 import xyz.nucleoid.plasmid.game.event.GameTickListener;
 import xyz.nucleoid.plasmid.game.event.PlayerAddListener;
@@ -48,11 +49,12 @@ import xyz.nucleoid.plasmid.game.event.PlayerDeathListener;
 import xyz.nucleoid.plasmid.game.event.UseItemListener;
 import xyz.nucleoid.plasmid.game.rule.GameRule;
 import xyz.nucleoid.plasmid.game.rule.RuleResult;
+import xyz.nucleoid.plasmid.widget.GlobalWidgets;
 
 public class WerewolfActivePhase {
 	private static final DecimalFormat FORMAT = new DecimalFormat("###,###");
 
-	private final GameWorld gameWorld;
+	private final GameSpace gameSpace;
 	private final ServerWorld world;
 	private final WerewolfMap map;
 	private final WerewolfConfig config;
@@ -64,20 +66,20 @@ public class WerewolfActivePhase {
 	private final ChannelManager channelManager;
 	private final VoteManager voteManager;
 
-	public WerewolfActivePhase(GameWorld gameWorld, WerewolfMap map, WerewolfConfig config) {
-		this.gameWorld = gameWorld;
-		this.world = gameWorld.getWorld();
+	public WerewolfActivePhase(GameSpace gameSpace, GlobalWidgets widgets, WerewolfMap map, WerewolfConfig config) {
+		this.gameSpace = gameSpace;
+		this.world = gameSpace.getWorld();
 		this.map = map;
 		this.config = config;
 		this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
 
 
-		this.bar = new TimeCycleBar(this);
+		this.bar = new TimeCycleBar(this, widgets);
 		this.voteManager = new VoteManager(this);
-		this.channelManager = new ChannelManager(this.gameWorld, this.players);
+		this.channelManager = new ChannelManager(this.gameSpace, this.players);
 	}
 
-	public static void setRules(Game game) {
+	public static void setRules(GameLogic game) {
 		game.setRule(GameRule.BLOCK_DROPS, RuleResult.DENY);
 		game.setRule(GameRule.CRAFTING, RuleResult.DENY);
 		game.setRule(GameRule.FALL_DAMAGE, RuleResult.DENY);
@@ -86,11 +88,11 @@ public class WerewolfActivePhase {
 		game.setRule(GameRule.THROW_ITEMS, RuleResult.DENY);
 	}
 
-	public static void open(GameWorld gameWorld, WerewolfMap map, WerewolfConfig config) {
-		WerewolfActivePhase phase = new WerewolfActivePhase(gameWorld, map, config);
-
-		gameWorld.openGame(game -> {
+	public static void open(GameSpace gameSpace, WerewolfMap map, WerewolfConfig config) {
+		gameSpace.openGame(game -> {
+			GlobalWidgets widgets = new GlobalWidgets(game);
 			WerewolfActivePhase.setRules(game);
+			WerewolfActivePhase phase = new WerewolfActivePhase(gameSpace, widgets, map, config);
 
 			// Listeners
 			game.on(GameOpenListener.EVENT, phase::open);
@@ -118,7 +120,7 @@ public class WerewolfActivePhase {
 
 	private List<ServerPlayerEntity> getShuffledPlayers() {
 		List<ServerPlayerEntity> players = new ArrayList<>();
-		for (ServerPlayerEntity player : this.gameWorld.getPlayerSet()) {
+		for (ServerPlayerEntity player : this.gameSpace.getPlayers()) {
 			players.add(player);
 		}
 
@@ -254,7 +256,7 @@ public class WerewolfActivePhase {
 	}
 
 	private void endGame() {
-		this.gameWorld.close();
+		this.gameSpace.close(GameCloseReason.FINISHED);
 	}
 
 	private void endGameWithWinner(Alignment alignment) {
@@ -311,8 +313,8 @@ public class WerewolfActivePhase {
 		return ActionResult.SUCCESS;
 	}
 
-	private boolean onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
-		return true;
+	private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
+		return ActionResult.FAIL;
 	}
 
 	private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
@@ -347,8 +349,8 @@ public class WerewolfActivePhase {
 		}
 	}
 
-	public GameWorld getGameWorld() {
-		return this.gameWorld;
+	public GameSpace getGameSpace() {
+		return this.gameSpace;
 	}
 
 	public List<AbstractPlayerEntry> getPlayers() {

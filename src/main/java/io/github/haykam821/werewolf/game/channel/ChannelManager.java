@@ -3,14 +3,14 @@ package io.github.haykam821.werewolf.game.channel;
 import java.util.List;
 
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
-import xyz.nucleoid.plasmid.game.GameWorld;
+import xyz.nucleoid.plasmid.game.GameSpace;
 
 public class ChannelManager {
 	private final Channel gameChannel;
 	private final Channel wolfChannel;
 
-	public ChannelManager(GameWorld gameWorld, List<AbstractPlayerEntry> players) {
-		this.gameChannel = new GameChannel(gameWorld.getPlayerSet());
+	public ChannelManager(GameSpace gameSpace, List<AbstractPlayerEntry> players) {
+		this.gameChannel = new GameChannel(gameSpace.getPlayers());
 		this.wolfChannel = new WolfChannel(players);
 	}
 

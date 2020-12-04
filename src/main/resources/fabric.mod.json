@@ -19,6 +19,7 @@
 	"license": "MIT",
 	"icon": "assets/werewolf/icon.png",
 	"depends": {
-		"fabricloader": ">=0.4.0"
+		"fabricloader": ">=0.4.0",
+		"plasmid": ">=0.4.15"
 	}
 }
