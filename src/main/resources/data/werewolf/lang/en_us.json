@@ -34,6 +34,7 @@
 	"command.werewolf.actions.queue.success": "That action has been queued",
 	"command.werewolf.roles.role_entry": "%s (%s)",
 	"command.werewolf.roles.show.role_does_not_exist": "There is no role with the ID '%s'",
+	"game.werewolf.default_werewolf": "Werewolf",
 	"gameType.werewolf.werewolf": "Werewolf",
 	"role.werewolf.seer": "Seer",
 	"role.werewolf.shaman": "Shaman",

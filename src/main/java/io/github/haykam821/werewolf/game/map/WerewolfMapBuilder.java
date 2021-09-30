@@ -5,12 +5,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.github.haykam821.werewolf.game.WerewolfConfig;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
+import xyz.nucleoid.map_templates.BlockBounds;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.MapTemplateSerializer;
 import xyz.nucleoid.plasmid.game.GameOpenException;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.MapTemplateSerializer;
-import xyz.nucleoid.plasmid.util.BlockBounds;
 
 public class WerewolfMapBuilder {
 	private final WerewolfConfig config;
@@ -19,22 +20,22 @@ public class WerewolfMapBuilder {
 		this.config = config;
 	}
 
-	private MapTemplate getTemplate() throws GameOpenException {
+	private MapTemplate getTemplate(MinecraftServer server) throws GameOpenException {
 		try {
-			return MapTemplateSerializer.INSTANCE.loadFromResource(this.config.getMap());
+			return MapTemplateSerializer.loadFromResource(server, this.config.getMap());
 		} catch (IOException exception) {
 			throw new GameOpenException(new TranslatableText("text.werewolf.map_load_failed", this.config.getMap().toString()));
 		}
 	}
 
-	public WerewolfMap create() throws GameOpenException {
-		MapTemplate template = this.getTemplate();
+	public WerewolfMap create(MinecraftServer server) throws GameOpenException {
+		MapTemplate template = this.getTemplate(server);
 
 		BlockBounds spawn = template.getMetadata().getFirstRegionBounds("spawn");
 		Set<BlockBounds> campfires = template.getMetadata().getRegionBounds("campfire").collect(Collectors.toSet());
 
 		if (spawn == null) {
-			return new WerewolfMap(template, BlockBounds.of(new BlockPos(0, 0, 0)), campfires);
+			return new WerewolfMap(template, BlockBounds.ofBlock(new BlockPos(0, 0, 0)), campfires);
 		}
 
 		return new WerewolfMap(template, spawn, campfires);

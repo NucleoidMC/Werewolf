@@ -9,7 +9,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+import xyz.nucleoid.map_templates.BlockBounds;
 
 public class PlayerEntry extends AbstractPlayerEntry {
 	private final ServerPlayerEntity player;
@@ -33,10 +33,10 @@ public class PlayerEntry extends AbstractPlayerEntry {
 
 	@Override
 	public void spawn(ServerWorld world, BlockBounds spawnBounds) {
-		this.player.setGameMode(GameMode.ADVENTURE);
+		this.player.changeGameMode(GameMode.ADVENTURE);
 		this.role.reapply(this);
 
-		Vec3d spawn = spawnBounds.getCenter();
+		Vec3d spawn = spawnBounds.center();
 		this.player.teleport(world, spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0);
 
 		this.sendDirectMessage("text.werewolf.role.initial", this.role.getName());

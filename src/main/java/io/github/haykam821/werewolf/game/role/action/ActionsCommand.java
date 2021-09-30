@@ -17,7 +17,9 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import xyz.nucleoid.plasmid.game.ManagedGameSpace;
+import xyz.nucleoid.plasmid.game.manager.GameSpaceManager;
+import xyz.nucleoid.plasmid.game.manager.ManagedGameSpace;
+import xyz.nucleoid.stimuli.Stimuli;
 
 public class ActionsCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -90,13 +92,13 @@ public class ActionsCommand {
 	}
 
 	private static AbstractPlayerEntry obtainPlayerEntry(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
-		ManagedGameSpace gameSpace = ManagedGameSpace.forWorld(player.getEntityWorld());
+		ManagedGameSpace gameSpace = GameSpaceManager.get().byPlayer(player);
 		if (gameSpace == null) {
 			context.getSource().sendError(new TranslatableText("command.werewolf.actions.not_in_game", player.getDisplayName()));
 			return null;
 		}
 
-		AbstractPlayerEntry entry = gameSpace.invoker(PlayerEntryObtainer.EVENT).obtainPlayerEntry(player);
+		AbstractPlayerEntry entry = Stimuli.select().forEntity(player).get(PlayerEntryObtainer.EVENT).obtainPlayerEntry(player);
 		if (entry == null) {
 			context.getSource().sendError(new TranslatableText("command.werewolf.actions.not_alive", player.getDisplayName()));
 		}

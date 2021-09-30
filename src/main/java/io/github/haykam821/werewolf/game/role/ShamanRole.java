@@ -12,7 +12,7 @@ public class ShamanRole extends VillagerRole {
 	@Override
 	public List<Action> getNightActions(AbstractPlayerEntry user) {
 		List<Action> actions = new ArrayList<>();
-		Totem totem = Totem.getRandom(user.getPhase().getGameSpace().getWorld().getRandom());
+		Totem totem = Totem.getRandom(user.getPhase().getWorld().getRandom());
 
 		for (AbstractPlayerEntry entry : user.getPhase().getPlayers()) {
 			if (!user.equals(entry)) {

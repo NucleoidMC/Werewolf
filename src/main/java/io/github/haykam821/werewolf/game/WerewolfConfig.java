@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.Identifier;
-import xyz.nucleoid.plasmid.game.config.PlayerConfig;
+import xyz.nucleoid.plasmid.game.common.config.PlayerConfig;
 
 public class WerewolfConfig {
 	public static final Codec<WerewolfConfig> CODEC = RecordCodecBuilder.create(instance -> {

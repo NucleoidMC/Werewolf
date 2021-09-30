@@ -3,11 +3,10 @@ package io.github.haykam821.werewolf.game.timecycle;
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.text.Text;
-import net.minecraft.util.Tickable;
-import xyz.nucleoid.plasmid.widget.BossBarWidget;
-import xyz.nucleoid.plasmid.widget.GlobalWidgets;
+import xyz.nucleoid.plasmid.game.common.GlobalWidgets;
+import xyz.nucleoid.plasmid.game.common.widget.BossBarWidget;
 
-public class TimeCycleBar implements Tickable {
+public class TimeCycleBar {
 	private static final BossBar.Style STYLE = BossBar.Style.PROGRESS;
 	
 	private final WerewolfActivePhase phase;
@@ -18,7 +17,6 @@ public class TimeCycleBar implements Tickable {
 		this.widget = widgets.addBossBar(this.getTitle(), this.getColor(), STYLE);
 	}
 
-	@Override
 	public void tick() {
 		this.widget.setProgress(this.phase.getTicksUntilSwitch() / (float) this.phase.getConfig().getMaxTimeCycleLength());
 	}

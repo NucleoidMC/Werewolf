@@ -11,7 +11,7 @@ import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+import xyz.nucleoid.map_templates.BlockBounds;
 
 public abstract class AbstractPlayerEntry {
 	private final WerewolfActivePhase phase;

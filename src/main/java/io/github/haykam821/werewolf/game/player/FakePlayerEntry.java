@@ -7,7 +7,7 @@ import io.github.haykam821.werewolf.game.role.Role;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+import xyz.nucleoid.map_templates.BlockBounds;
 
 public class FakePlayerEntry extends AbstractPlayerEntry {
 	private final UUID uuid = UUID.randomUUID();

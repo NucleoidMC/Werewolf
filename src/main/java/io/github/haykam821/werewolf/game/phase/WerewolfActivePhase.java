@@ -23,7 +23,6 @@ import io.github.haykam821.werewolf.game.timecycle.TimeCycleBar;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -37,19 +36,17 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameCloseReason;
-import xyz.nucleoid.plasmid.game.GameLogic;
 import xyz.nucleoid.plasmid.game.GameSpace;
-import xyz.nucleoid.plasmid.game.event.GameOpenListener;
-import xyz.nucleoid.plasmid.game.event.GameTickListener;
-import xyz.nucleoid.plasmid.game.event.PlayerAddListener;
-import xyz.nucleoid.plasmid.game.event.PlayerChatListener;
-import xyz.nucleoid.plasmid.game.event.PlayerDamageListener;
-import xyz.nucleoid.plasmid.game.event.PlayerDeathListener;
-import xyz.nucleoid.plasmid.game.event.UseItemListener;
-import xyz.nucleoid.plasmid.game.rule.GameRule;
-import xyz.nucleoid.plasmid.game.rule.RuleResult;
-import xyz.nucleoid.plasmid.widget.GlobalWidgets;
+import xyz.nucleoid.plasmid.game.common.GlobalWidgets;
+import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
+import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.game.rule.GameRuleType;
+import xyz.nucleoid.stimuli.event.item.ItemUseEvent;
+import xyz.nucleoid.stimuli.event.player.PlayerChatEvent;
+import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
+import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 
 public class WerewolfActivePhase {
 	private static final DecimalFormat FORMAT = new DecimalFormat("###,###");
@@ -66,9 +63,9 @@ public class WerewolfActivePhase {
 	private final ChannelManager channelManager;
 	private final VoteManager voteManager;
 
-	public WerewolfActivePhase(GameSpace gameSpace, GlobalWidgets widgets, WerewolfMap map, WerewolfConfig config) {
+	public WerewolfActivePhase(GameSpace gameSpace, ServerWorld world, GlobalWidgets widgets, WerewolfMap map, WerewolfConfig config) {
 		this.gameSpace = gameSpace;
-		this.world = gameSpace.getWorld();
+		this.world = world;
 		this.map = map;
 		this.config = config;
 		this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
@@ -79,30 +76,30 @@ public class WerewolfActivePhase {
 		this.channelManager = new ChannelManager(this.gameSpace, this.players);
 	}
 
-	public static void setRules(GameLogic game) {
-		game.setRule(GameRule.BLOCK_DROPS, RuleResult.DENY);
-		game.setRule(GameRule.CRAFTING, RuleResult.DENY);
-		game.setRule(GameRule.FALL_DAMAGE, RuleResult.DENY);
-		game.setRule(GameRule.HUNGER, RuleResult.DENY);
-		game.setRule(GameRule.PORTALS, RuleResult.DENY);
-		game.setRule(GameRule.THROW_ITEMS, RuleResult.DENY);
+	public static void setRules(GameActivity activity) {
+		activity.deny(GameRuleType.BLOCK_DROPS);
+		activity.deny(GameRuleType.CRAFTING);
+		activity.deny(GameRuleType.FALL_DAMAGE);
+		activity.deny(GameRuleType.HUNGER);
+		activity.deny(GameRuleType.PORTALS);
+		activity.deny(GameRuleType.THROW_ITEMS);
 	}
 
-	public static void open(GameSpace gameSpace, WerewolfMap map, WerewolfConfig config) {
-		gameSpace.openGame(game -> {
-			GlobalWidgets widgets = new GlobalWidgets(game);
-			WerewolfActivePhase.setRules(game);
-			WerewolfActivePhase phase = new WerewolfActivePhase(gameSpace, widgets, map, config);
+	public static void open(GameSpace gameSpace, ServerWorld world, WerewolfMap map, WerewolfConfig config) {
+		gameSpace.setActivity(activity -> {
+			GlobalWidgets widgets = GlobalWidgets.addTo(activity);
+			WerewolfActivePhase.setRules(activity);
+			WerewolfActivePhase phase = new WerewolfActivePhase(gameSpace, world, widgets, map, config);
 
 			// Listeners
-			game.on(GameOpenListener.EVENT, phase::open);
-			game.on(GameTickListener.EVENT, phase::tick);
-			game.on(PlayerAddListener.EVENT, phase::addPlayer);
-			game.on(PlayerChatListener.EVENT, phase::onPlayerChat);
-			game.on(PlayerDamageListener.EVENT, phase::onPlayerDamage);
-			game.on(PlayerDeathListener.EVENT, phase::onPlayerDeath);
-			game.on(UseItemListener.EVENT, phase::onUseItem);
-			game.on(PlayerEntryObtainer.EVENT, phase::getEntryFromPlayer);
+			activity.listen(GameActivityEvents.ENABLE, phase::enable);
+			activity.listen(GameActivityEvents.TICK, phase::tick);
+			activity.listen(GamePlayerEvents.ADD, phase::addPlayer);
+			activity.listen(PlayerChatEvent.EVENT, phase::onPlayerChat);
+			activity.listen(PlayerDamageEvent.EVENT, phase::onPlayerDamage);
+			activity.listen(PlayerDeathEvent.EVENT, phase::onPlayerDeath);
+			activity.listen(ItemUseEvent.EVENT, phase::onUseItem);
+			activity.listen(PlayerEntryObtainer.EVENT, phase::getEntryFromPlayer);
 		});
 	}
 
@@ -128,7 +125,7 @@ public class WerewolfActivePhase {
 		return players;
 	}
 
-	private void open() {
+	private void enable() {
 		this.world.setTimeOfDay(this.timeCycle.getTimeOfDay());
 
 		Object2IntLinkedOpenHashMap<Role> roleCounts = new Object2IntLinkedOpenHashMap<>();
@@ -264,8 +261,8 @@ public class WerewolfActivePhase {
 		this.endGame();
 	}
 
-	private void setSpectator(PlayerEntity player) {
-		player.setGameMode(GameMode.SPECTATOR);
+	private void setSpectator(ServerPlayerEntity player) {
+		player.changeGameMode(GameMode.SPECTATOR);
 	}
 
 	private AbstractPlayerEntry getEntryFromPlayer(ServerPlayerEntity player) {
@@ -281,7 +278,7 @@ public class WerewolfActivePhase {
 		if (this.getEntryFromPlayer(player) == null) {
 			this.setSpectator(player);
 
-			Vec3d spawn = this.map.getSpawn().getCenter();
+			Vec3d spawn = this.map.getSpawn().center();
 			player.teleport(this.world, spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0);
 		}
 	}
@@ -302,7 +299,7 @@ public class WerewolfActivePhase {
 		return ActionResult.FAIL;
 	}
 
-	private ActionResult onPlayerChat(Text text, ServerPlayerEntity sender) {
+	private ActionResult onPlayerChat(ServerPlayerEntity sender, Text text) {
 		if (text instanceof TranslatableText) {
 			TranslatableText translatableText = (TranslatableText) text;
 			return this.handleMessage((String) translatableText.getArgs()[1], sender);
@@ -330,8 +327,8 @@ public class WerewolfActivePhase {
 		ItemStack stack = player.getStackInHand(hand);
 
 		AbstractPlayerEntry entry = this.getEntryFromPlayer(player);
-		if (entry != null && stack.hasTag()) {
-			Action action = entry.getAction(stack.getTag().getInt("ActionIndex"));
+		if (entry != null && stack.hasNbt()) {
+			Action action = entry.getAction(stack.getNbt().getInt("ActionIndex"));
 			if (action != null) {
 				action.use(entry);
 				return TypedActionResult.success(stack);
@@ -351,6 +348,10 @@ public class WerewolfActivePhase {
 
 	public GameSpace getGameSpace() {
 		return this.gameSpace;
+	}
+
+	public ServerWorld getWorld() {
+		return this.world;
 	}
 
 	public List<AbstractPlayerEntry> getPlayers() {

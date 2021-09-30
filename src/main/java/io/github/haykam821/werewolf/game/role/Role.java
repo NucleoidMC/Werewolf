@@ -18,7 +18,7 @@ import xyz.nucleoid.plasmid.registry.TinyRegistry;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
 public abstract class Role {
-	public static final TinyRegistry<Role> REGISTRY = TinyRegistry.newStable();
+	public static final TinyRegistry<Role> REGISTRY = TinyRegistry.create();
 
 	private String translationKey;
 
@@ -35,7 +35,7 @@ public abstract class Role {
 
 	public void unapply(AbstractPlayerEntry entry) {
 		if (entry instanceof PlayerEntry) {
-			((PlayerEntry) entry).getPlayer().inventory.clear();
+			((PlayerEntry) entry).getPlayer().getInventory().clear();
 		}
 		entry.clearActions();
 	}
@@ -62,7 +62,7 @@ public abstract class Role {
 			}
 
 			ItemStack stack = builder.build();
-			stack.getTag().putInt("ActionIndex", index);
+			stack.getNbt().putInt("ActionIndex", index);
 
 			entry.putAction(action);
 			stacks.add(stack);
@@ -75,14 +75,13 @@ public abstract class Role {
 
 			int slot = 0;
 			for (ItemStack stack : stacks) {
-				player.inventory.setStack(slot, stack);
+				player.getInventory().setStack(slot, stack);
 				slot += 1;
 			}
 
 			// Update inventory
 			player.currentScreenHandler.sendContentUpdates();
-			player.playerScreenHandler.onContentChanged(player.inventory);
-			player.updateCursorStack();
+			player.playerScreenHandler.onContentChanged(player.getInventory());
 		}
 	}
 
