@@ -42,6 +42,8 @@ import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.common.GlobalWidgets;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.game.player.PlayerOffer;
+import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
 import xyz.nucleoid.plasmid.game.rule.GameRuleType;
 import xyz.nucleoid.stimuli.event.item.ItemUseEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerChatEvent;
@@ -94,7 +96,7 @@ public class WerewolfActivePhase {
 			// Listeners
 			activity.listen(GameActivityEvents.ENABLE, phase::enable);
 			activity.listen(GameActivityEvents.TICK, phase::tick);
-			activity.listen(GamePlayerEvents.ADD, phase::addPlayer);
+			activity.listen(GamePlayerEvents.OFFER, phase::offerPlayer);
 			activity.listen(PlayerChatEvent.EVENT, phase::onPlayerChat);
 			activity.listen(PlayerDamageEvent.EVENT, phase::onPlayerDamage);
 			activity.listen(PlayerDeathEvent.EVENT, phase::onPlayerDeath);
@@ -274,13 +276,10 @@ public class WerewolfActivePhase {
 		return null;
 	}
 
-	private void addPlayer(ServerPlayerEntity player) {
-		if (this.getEntryFromPlayer(player) == null) {
-			this.setSpectator(player);
-
-			Vec3d spawn = this.map.getSpawn().center();
-			player.teleport(this.world, spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0);
-		}
+	private PlayerOfferResult offerPlayer(PlayerOffer offer) {
+		return offer.accept(this.world, this.map.getSpawn().center()).and(() -> {
+			this.setSpectator(offer.player());
+		});
 	}
 
 	private ActionResult handleMessage(String message, ServerPlayerEntity sender) {
