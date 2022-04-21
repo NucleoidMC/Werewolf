@@ -36,6 +36,7 @@
 	"command.werewolf.roles.show.role_does_not_exist": "There is no role with the ID '%s'",
 	"game.werewolf.default_werewolf": "Werewolf",
 	"gameType.werewolf.werewolf": "Werewolf",
+	"role.werewolf.cultist": "Cultist",
 	"role.werewolf.seer": "Seer",
 	"role.werewolf.shaman": "Shaman",
 	"role.werewolf.villager": "Villager",
