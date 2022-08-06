@@ -5,17 +5,15 @@ import java.util.List;
 
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import io.github.haykam821.werewolf.game.player.PlayerEntry;
+import io.github.haykam821.werewolf.game.player.ui.ActionUi;
 import io.github.haykam821.werewolf.game.role.action.AbstainAction;
 import io.github.haykam821.werewolf.game.role.action.Action;
 import io.github.haykam821.werewolf.game.role.action.LynchAction;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
-import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
 public abstract class Role {
 	public static final TinyRegistry<Role> REGISTRY = TinyRegistry.create();
@@ -33,10 +31,7 @@ public abstract class Role {
 		return new TranslatableText(this.getTranslationKey());
 	}
 
-	public void unapply(AbstractPlayerEntry entry) {
-		if (entry instanceof PlayerEntry) {
-			((PlayerEntry) entry).getPlayer().getInventory().clear();
-		}
+	public void clear(AbstractPlayerEntry entry) {
 		entry.clearActions();
 	}
 
@@ -45,49 +40,24 @@ public abstract class Role {
 		return timeCycle == TimeCycle.NIGHT ? this.getNightActions(entry) : this.getDayActions(entry);
 	}
 
-	public void apply(AbstractPlayerEntry entry) {
-		if (entry.getRemainingActions() <= 0) return;
+	public void update(AbstractPlayerEntry entry) {
+		this.clear(entry);
 
-		List<Action> actions = this.getActions(entry);
-		if (actions.size() < entry.getRemainingActions()) {
-			entry.setRemainingActions(actions.size());
-		}
-
-		int index = 0;
-		List<ItemStack> stacks = new ArrayList<>();
-		for (Action action : actions) {
-			ItemStackBuilder builder = ItemStackBuilder.of(action.getDisplayStack(entry)).setName(action.getName());
-			for (Text lore : action.getLore()) {
-				builder.addLore(lore);
+		if (entry.getRemainingActions() > 0) {
+			List<Action> actions = this.getActions(entry);
+			if (actions.size() < entry.getRemainingActions()) {
+				entry.setRemainingActions(actions.size());
 			}
 
-			ItemStack stack = builder.build();
-			stack.getNbt().putInt("ActionIndex", index);
-
-			entry.putAction(action);
-			stacks.add(stack);
-
-			index += 1;
+			for (Action action : actions) {
+				entry.putAction(action);
+			}
 		}
 
 		if (entry instanceof PlayerEntry) {
-			ServerPlayerEntity player = ((PlayerEntry) entry).getPlayer();
-
-			int slot = 0;
-			for (ItemStack stack : stacks) {
-				player.getInventory().setStack(slot, stack);
-				slot += 1;
-			}
-
-			// Update inventory
-			player.currentScreenHandler.sendContentUpdates();
-			player.playerScreenHandler.onContentChanged(player.getInventory());
+			ActionUi ui = ((PlayerEntry) entry).getUi();
+			ui.update();
 		}
-	}
-
-	public void reapply(AbstractPlayerEntry entry) {
-		this.unapply(entry);
-		this.apply(entry);
 	}
 
 	public int getMaxDayActions(AbstractPlayerEntry user) {

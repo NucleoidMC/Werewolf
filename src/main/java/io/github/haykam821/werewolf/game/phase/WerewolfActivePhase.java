@@ -23,7 +23,6 @@ import io.github.haykam821.werewolf.game.timecycle.TimeCycleBar;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
@@ -32,9 +31,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameCloseReason;
@@ -45,7 +41,6 @@ import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
 import xyz.nucleoid.plasmid.game.player.PlayerOffer;
 import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
 import xyz.nucleoid.plasmid.game.rule.GameRuleType;
-import xyz.nucleoid.stimuli.event.item.ItemUseEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerChatEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
@@ -100,7 +95,6 @@ public class WerewolfActivePhase {
 			activity.listen(PlayerChatEvent.EVENT, phase::onPlayerChat);
 			activity.listen(PlayerDamageEvent.EVENT, phase::onPlayerDamage);
 			activity.listen(PlayerDeathEvent.EVENT, phase::onPlayerDeath);
-			activity.listen(ItemUseEvent.EVENT, phase::onUseItem);
 			activity.listen(PlayerEntryObtainer.EVENT, phase::getEntryFromPlayer);
 		});
 	}
@@ -169,7 +163,7 @@ public class WerewolfActivePhase {
 
 	private void eliminateWithoutRemoval(AbstractPlayerEntry entry) {
 		if (entry instanceof PlayerEntry) {
-			entry.getRole().unapply((PlayerEntry) entry);
+			entry.getRole().clear((PlayerEntry) entry);
 			this.setSpectator(((PlayerEntry) entry).getPlayer());
 		}
 	}
@@ -179,14 +173,14 @@ public class WerewolfActivePhase {
 		this.players.remove(entry);
 	}
 
-	private void reapplyAll() {
+	private void updateAll() {
 		Iterator<AbstractPlayerEntry> iterator = this.players.iterator();
 		while (iterator.hasNext()) {
 			AbstractPlayerEntry entry = iterator.next();
 
 			entry.resetRemainingActions();
 			if (entry instanceof PlayerEntry) {
-				entry.getRole().reapply((PlayerEntry) entry);
+				entry.getRole().update((PlayerEntry) entry);
 			}
 
 			if (this.timeCycle == TimeCycle.NIGHT) {
@@ -213,7 +207,7 @@ public class WerewolfActivePhase {
 
 		// Switch time cycle
 		this.timeCycle = this.timeCycle == TimeCycle.NIGHT ? TimeCycle.DAY : TimeCycle.NIGHT;
-		this.reapplyAll();
+		this.updateAll();
 
 		this.bar.changeTimeCycle();
 		this.world.setTimeOfDay(this.timeCycle.getTimeOfDay());
@@ -322,27 +316,10 @@ public class WerewolfActivePhase {
 		return ActionResult.SUCCESS;
 	}
 
-	private TypedActionResult<ItemStack> onUseItem(ServerPlayerEntity player, Hand hand) {
-		ItemStack stack = player.getStackInHand(hand);
-
-		AbstractPlayerEntry entry = this.getEntryFromPlayer(player);
-		if (entry != null && stack.hasNbt()) {
-			Action action = entry.getAction(stack.getNbt().getInt("ActionIndex"));
-			if (action != null) {
-				action.use(entry);
-				return TypedActionResult.success(stack);
-			}
-		}
-
-		return TypedActionResult.pass(stack);
-	}
-
 	public void queueAction(Action action, AbstractPlayerEntry user) {
 		this.actionQueue.add(new ActionQueueEntry(action, user));
 		user.decrementRemainingActions();
-		if (user instanceof PlayerEntry) {
-			user.getRole().reapply((PlayerEntry) user);
-		}
+		user.getRole().update(user);
 	}
 
 	public GameSpace getGameSpace() {

@@ -28,7 +28,7 @@ public class FakePlayerEntry extends AbstractPlayerEntry {
 
 	@Override
 	public void changeRole(Role role) {
-		this.role.reapply(this);
+		this.role.update(this);
 		super.changeRole(role);
 	}
 

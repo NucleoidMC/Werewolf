@@ -3,6 +3,7 @@ package io.github.haykam821.werewolf.game.player;
 import io.github.haykam821.werewolf.game.channel.Channel;
 import io.github.haykam821.werewolf.game.channel.DirectChannel;
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
+import io.github.haykam821.werewolf.game.player.ui.ActionUi;
 import io.github.haykam821.werewolf.game.role.Role;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -14,16 +15,22 @@ import xyz.nucleoid.map_templates.BlockBounds;
 public class PlayerEntry extends AbstractPlayerEntry {
 	private final ServerPlayerEntity player;
 	private final Channel channel;
+	private final ActionUi ui;
 	
 	public PlayerEntry(WerewolfActivePhase phase, ServerPlayerEntity player, Role role, boolean cursed) {
 		super(phase, role, cursed);
 
 		this.player = player;
 		this.channel = new DirectChannel(player);
+		this.ui = new ActionUi(this);
 	}
 
 	public ServerPlayerEntity getPlayer() {
 		return this.player;
+	}
+
+	public ActionUi getUi() {
+		return this.ui;
 	}
 	
 	@Override
@@ -34,7 +41,8 @@ public class PlayerEntry extends AbstractPlayerEntry {
 	@Override
 	public void spawn(ServerWorld world, BlockBounds spawnBounds) {
 		this.player.changeGameMode(GameMode.ADVENTURE);
-		this.role.reapply(this);
+		this.role.update(this);
+		this.ui.open();
 
 		Vec3d spawn = spawnBounds.center();
 		this.player.teleport(world, spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0);
@@ -44,7 +52,7 @@ public class PlayerEntry extends AbstractPlayerEntry {
 
 	@Override
 	public void changeRole(Role role) {
-		this.role.reapply(this);
+		this.role.update(this);
 		super.changeRole(role);
 	}
 
