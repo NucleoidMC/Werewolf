@@ -10,7 +10,7 @@ import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import io.github.haykam821.werewolf.game.player.PlayerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public abstract class FilteredChannel extends Channel {
+public abstract class FilteredChannel extends ChatChannel {
 	private final List<AbstractPlayerEntry> players;
 	private final Predicate<AbstractPlayerEntry> predicate;
 

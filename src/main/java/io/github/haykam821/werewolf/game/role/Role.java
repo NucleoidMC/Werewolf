@@ -11,7 +11,6 @@ import io.github.haykam821.werewolf.game.role.action.Action;
 import io.github.haykam821.werewolf.game.role.action.LynchAction;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
 
@@ -28,7 +27,7 @@ public abstract class Role {
 	}
 
 	public Text getName() {
-		return new TranslatableText(this.getTranslationKey());
+		return Text.translatable(this.getTranslationKey());
 	}
 
 	public void clear(AbstractPlayerEntry entry) {

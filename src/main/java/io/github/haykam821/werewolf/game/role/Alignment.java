@@ -1,7 +1,6 @@
 package io.github.haykam821.werewolf.game.role;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public enum Alignment {
 	VILLAGER("villager"),
@@ -10,7 +9,7 @@ public enum Alignment {
 	private Text name;
 
 	private Alignment(String name) {
-		this.name = new TranslatableText("alignment." + name);
+		this.name = Text.translatable("alignment." + name);
 	}
 
 	public Text getName() {
