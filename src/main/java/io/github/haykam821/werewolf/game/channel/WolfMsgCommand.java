@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import io.github.haykam821.werewolf.game.role.action.ActionsCommand;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.command.argument.MessageArgumentType.SignedMessage;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -29,9 +28,10 @@ public class WolfMsgCommand {
 			return 0;
 		}
 
-		SignedMessage message = MessageArgumentType.getSignedMessage(context, "message");
-		entry.getPhase().sendWolfMessage(player, message.signedArgument());
-
+		MessageArgumentType.getSignedMessage(context, "message", message -> {
+			entry.getPhase().sendWolfMessage(player, message);
+		});
+		
 		return Command.SINGLE_SUCCESS;
 	}
 }

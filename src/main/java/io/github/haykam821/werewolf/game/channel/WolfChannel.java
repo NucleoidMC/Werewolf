@@ -5,8 +5,8 @@ import java.util.List;
 import io.github.haykam821.werewolf.Main;
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.registry.RegistryKey;
 
 public class WolfChannel extends FilteredChannel {
 	public WolfChannel(List<AbstractPlayerEntry> players) {
