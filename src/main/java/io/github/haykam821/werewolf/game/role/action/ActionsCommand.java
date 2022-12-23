@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 import io.github.haykam821.werewolf.game.event.PlayerEntryObtainer;
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
@@ -14,9 +15,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import xyz.nucleoid.plasmid.game.manager.GameSpaceManager;
 import xyz.nucleoid.plasmid.game.manager.ManagedGameSpace;
 import xyz.nucleoid.stimuli.Stimuli;
@@ -77,7 +76,7 @@ public class ActionsCommand {
 	 * Gets a message containing debug information about an action.
 	 */
 	private static Text getActionMessage(Action action, AbstractPlayerEntry user, int index, boolean self) {
-		return new LiteralText("- ").append(action.getName().shallowCopy().styled(style -> {
+		return Text.literal("- ").append(action.getName().copy().styled(style -> {
 			HoverEvent.ItemStackContent content = new HoverEvent.ItemStackContent(action.getDisplayStack(user));
 			style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, content));
 
@@ -91,17 +90,17 @@ public class ActionsCommand {
 		}));
 	}
 
-	private static AbstractPlayerEntry obtainPlayerEntry(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
+	public static AbstractPlayerEntry obtainPlayerEntry(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) throws CommandSyntaxException {
 		ManagedGameSpace gameSpace = GameSpaceManager.get().byPlayer(player);
 		if (gameSpace == null) {
-			context.getSource().sendError(new TranslatableText("command.werewolf.actions.not_in_game", player.getDisplayName()));
-			return null;
+			throw new SimpleCommandExceptionType(Text.translatable("command.werewolf.actions.not_in_game", player.getDisplayName())).create();
 		}
 
 		AbstractPlayerEntry entry = Stimuli.select().forEntity(player).get(PlayerEntryObtainer.EVENT).obtainPlayerEntry(player);
 		if (entry == null) {
-			context.getSource().sendError(new TranslatableText("command.werewolf.actions.not_alive", player.getDisplayName()));
+			throw new SimpleCommandExceptionType(Text.translatable("command.werewolf.actions.not_alive", player.getDisplayName())).create();
 		}
+
 		return entry;
 	}
 
@@ -112,7 +111,7 @@ public class ActionsCommand {
 		int index = IntegerArgumentType.getInteger(context, "action");
 		Action action = entry.getAction(index);
 		if (action == null) {
-			context.getSource().sendError(new TranslatableText("command.werewolf.actions.action_does_not_exist", index));
+			context.getSource().sendError(Text.translatable("command.werewolf.actions.action_does_not_exist", index));
 			return 1;
 		}
 
@@ -120,41 +119,38 @@ public class ActionsCommand {
 		return 0;
 	}
 
-	private static int executeQueue(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
+	private static int executeQueue(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) throws CommandSyntaxException {
 		AbstractPlayerEntry entry = ActionsCommand.obtainPlayerEntry(context, player);
-		if (entry == null) return 1;
 
 		Action action = entry.getAction(IntegerArgumentType.getInteger(context, "action"));
 		if (action == null) {
-			context.getSource().sendError(new TranslatableText("command.werewolf.actions.action_does_not_exist"));
+			context.getSource().sendError(Text.translatable("command.werewolf.actions.action_does_not_exist"));
 			return 1;
 		}
 
 		action.use(entry);
-		context.getSource().sendFeedback(new TranslatableText("command.werewolf.actions.queue.success"), true);
+		context.getSource().sendFeedback(Text.translatable("command.werewolf.actions.queue.success"), true);
 		return 0;
 	}
 
-	private static int executeExecute(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {
+	private static int executeExecute(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) throws CommandSyntaxException {
 		AbstractPlayerEntry entry = ActionsCommand.obtainPlayerEntry(context, player);
-		if (entry == null) return 1;
 
 		Action action = entry.getAction(IntegerArgumentType.getInteger(context, "action"));
 		if (action == null) {
-			context.getSource().sendError(new TranslatableText("command.werewolf.actions.action_does_not_exist"));
+			context.getSource().sendError(Text.translatable("command.werewolf.actions.action_does_not_exist"));
 			return 1;
 		}
 
 		action.execute(entry);
-		context.getSource().sendFeedback(new TranslatableText("command.werewolf.actions.execute.success"), true);
+		context.getSource().sendFeedback(Text.translatable("command.werewolf.actions.execute.success"), true);
 		return 0;
 	}
 
 	private static int executeList(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) throws CommandSyntaxException {
 		AbstractPlayerEntry entry = ActionsCommand.obtainPlayerEntry(context, player);
-		if (entry == null) return 1;
 
-		context.getSource().sendFeedback(new TranslatableText("command.werewolf.actions.list.header", player.getDisplayName(), entry.getActions().size()), true);
+		context.getSource().sendFeedback(Text.translatable("command.werewolf.actions.list.header", player.getDisplayName(), entry.getActions().size()), true);
 
 		int index = 0;
 		boolean self = player.equals(context.getSource().getPlayer());

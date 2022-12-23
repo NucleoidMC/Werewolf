@@ -10,7 +10,6 @@ import io.github.haykam821.werewolf.game.role.action.Totem;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import xyz.nucleoid.map_templates.BlockBounds;
 
 public abstract class AbstractPlayerEntry {
@@ -116,7 +115,7 @@ public abstract class AbstractPlayerEntry {
 		Text roleName = this.getRole().getName();
 
 		if (this.isCursed()) {
-			return new TranslatableText("text.werewolf.cursed").append(" ").append(roleName);
+			return Text.translatable("text.werewolf.cursed").append(" ").append(roleName);
 		}
 		return roleName;
 	}

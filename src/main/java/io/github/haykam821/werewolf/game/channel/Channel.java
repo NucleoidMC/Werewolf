@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public abstract class Channel {
@@ -21,11 +20,11 @@ public abstract class Channel {
 	}
 
 	private Text getColoredText(Text text, boolean textColor) {
-		return textColor ? text.shallowCopy().formatted(this.getTextColor()) : text;
+		return textColor ? text.copy().formatted(this.getTextColor()) : text;
 	}
 
 	public Text getWrappedText(Text text, boolean textColor) {
-		return new TranslatableText(this.getTranslationKey(), this.getColoredText(text, textColor)).formatted(this.getPrefixColor());
+		return Text.translatable(this.getTranslationKey(), this.getColoredText(text, textColor)).formatted(this.getPrefixColor());
 	}
 
 	public void sendMessage(Text message, boolean textColor) {
@@ -40,6 +39,6 @@ public abstract class Channel {
 	}
 
 	public void sendMessage(String key, Object... args) {
-		this.sendMessage(new TranslatableText(key, args));
+		this.sendMessage(Text.translatable(key, args));
 	}
 }

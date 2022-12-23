@@ -1,7 +1,6 @@
 package io.github.haykam821.werewolf.game.timecycle;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public enum TimeCycle {
 	NIGHT("night", 18000),
@@ -13,9 +12,9 @@ public enum TimeCycle {
 	private final int timeOfDay;
 
 	private TimeCycle(String name, int timeOfDay) {
-		this.name = new TranslatableText("timeCycle." + name);
-		this.warnText = new TranslatableText("timeCycle." + name + ".warn");
-		this.endText = new TranslatableText("timeCycle." + name + ".end");
+		this.name = Text.translatable("timeCycle." + name);
+		this.warnText = Text.translatable("timeCycle." + name + ".warn");
+		this.endText = Text.translatable("timeCycle." + name + ".end");
 
 		this.timeOfDay = timeOfDay;
 	}

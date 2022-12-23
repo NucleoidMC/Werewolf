@@ -8,7 +8,6 @@ import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public final class PageElement {
@@ -33,7 +32,7 @@ public final class PageElement {
 	}
 
 	private static Text getToolbarName(String translationKey) {
-		return new TranslatableText(translationKey).formatted(Formatting.YELLOW);
+		return Text.translatable(translationKey).formatted(Formatting.YELLOW);
 	}
 
 	private static ClickCallback createCallback(ActionUi ui, int offset) {

@@ -6,7 +6,6 @@ import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
 import io.github.haykam821.werewolf.game.role.Role;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import xyz.nucleoid.map_templates.BlockBounds;
 
 public class FakePlayerEntry extends AbstractPlayerEntry {
@@ -34,7 +33,7 @@ public class FakePlayerEntry extends AbstractPlayerEntry {
 
 	@Override
 	public Text getName() {
-		return new TranslatableText("text.werewolf.fake_player", this.uuid.toString());
+		return Text.translatable("text.werewolf.fake_player", this.uuid.toString());
 	}
 
 	@Override

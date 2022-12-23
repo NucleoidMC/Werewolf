@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import io.github.haykam821.werewolf.game.WerewolfConfig;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.map_templates.MapTemplate;
@@ -24,7 +24,7 @@ public class WerewolfMapBuilder {
 		try {
 			return MapTemplateSerializer.loadFromResource(server, this.config.getMap());
 		} catch (IOException exception) {
-			throw new GameOpenException(new TranslatableText("text.werewolf.map_load_failed", this.config.getMap().toString()));
+			throw new GameOpenException(Text.translatable("text.werewolf.map_load_failed", this.config.getMap().toString()));
 		}
 	}
 
