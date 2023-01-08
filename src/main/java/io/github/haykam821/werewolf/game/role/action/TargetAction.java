@@ -3,9 +3,7 @@ package io.github.haykam821.werewolf.game.role.action;
 import java.util.List;
 
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public abstract class TargetAction extends Action {
 	private final AbstractPlayerEntry target;
@@ -39,7 +37,7 @@ public abstract class TargetAction extends Action {
 
 	@Override
 	public Text getName() {
-		return new TranslatableText(this.getTranslationKey(), this.getTarget().getName());
+		return Text.translatable(this.getTranslationKey(), this.getTarget().getName());
 	}
 
 	@Override
@@ -47,7 +45,7 @@ public abstract class TargetAction extends Action {
 		List<Text> lore = super.getLore();
 
 		if (this.target != null) {
-			lore.add(new LiteralText("Target: ").append(this.target.getName()));
+			lore.add(Text.literal("Target: ").append(this.target.getName()));
 		}
 
 		return lore;

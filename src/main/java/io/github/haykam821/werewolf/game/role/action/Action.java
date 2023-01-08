@@ -6,7 +6,6 @@ import java.util.List;
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public abstract class Action {
 	public void execute(AbstractPlayerEntry user) {
@@ -24,7 +23,7 @@ public abstract class Action {
 	public abstract String getTranslationKey();
 
 	public Text getName() {
-		return new TranslatableText(this.getTranslationKey());
+		return Text.translatable(this.getTranslationKey());
 	}
 
 	public List<Text> getLore() {

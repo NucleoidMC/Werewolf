@@ -5,9 +5,7 @@ import java.util.List;
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class GiveTotemAction extends TargetAction {
 	private final Totem totem;
@@ -50,7 +48,7 @@ public class GiveTotemAction extends TargetAction {
 
 	@Override
 	public Text getName() {
-		return new TranslatableText(this.getTranslationKey(), this.totem.getName(), this.getTarget().getName());
+		return Text.translatable(this.getTranslationKey(), this.totem.getName(), this.getTarget().getName());
 	}
 
 	@Override
@@ -58,7 +56,7 @@ public class GiveTotemAction extends TargetAction {
 		List<Text> lore = super.getLore();
 
 		if (this.totem != null) {
-			lore.add(new LiteralText("Totem: ").append(this.totem.getName()));
+			lore.add(Text.literal("Totem: ").append(this.totem.getName()));
 		}
 
 		return lore;

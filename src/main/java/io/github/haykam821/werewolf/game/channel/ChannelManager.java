@@ -7,7 +7,7 @@ import xyz.nucleoid.plasmid.game.GameSpace;
 
 public class ChannelManager {
 	private final Channel gameChannel;
-	private final Channel wolfChannel;
+	private final ChatChannel wolfChannel;
 
 	public ChannelManager(GameSpace gameSpace, List<AbstractPlayerEntry> players) {
 		this.gameChannel = new GameChannel(gameSpace.getPlayers());
@@ -18,7 +18,7 @@ public class ChannelManager {
 		return this.gameChannel;
 	}
 
-	public Channel getWolfChannel() {
+	public ChatChannel getWolfChannel() {
 		return this.wolfChannel;
 	}
 }

@@ -23,14 +23,12 @@ import io.github.haykam821.werewolf.game.timecycle.TimeCycleBar;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameCloseReason;
@@ -41,7 +39,6 @@ import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
 import xyz.nucleoid.plasmid.game.player.PlayerOffer;
 import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
 import xyz.nucleoid.plasmid.game.rule.GameRuleType;
-import xyz.nucleoid.stimuli.event.player.PlayerChatEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 
@@ -92,7 +89,6 @@ public class WerewolfActivePhase {
 			activity.listen(GameActivityEvents.ENABLE, phase::enable);
 			activity.listen(GameActivityEvents.TICK, phase::tick);
 			activity.listen(GamePlayerEvents.OFFER, phase::offerPlayer);
-			activity.listen(PlayerChatEvent.EVENT, phase::onPlayerChat);
 			activity.listen(PlayerDamageEvent.EVENT, phase::onPlayerDamage);
 			activity.listen(PlayerDeathEvent.EVENT, phase::onPlayerDeath);
 			activity.listen(PlayerEntryObtainer.EVENT, phase::getEntryFromPlayer);
@@ -144,18 +140,18 @@ public class WerewolfActivePhase {
 		}
 
 		this.sendBreakdown(roleCounts);
-		this.sendWolfMessage("channel.wolf.hint");
+		this.channelManager.getWolfChannel().sendMessage("channel.wolf.hint");
 	}
 
 	private void sendBreakdown(Object2IntLinkedOpenHashMap<Role> roleCounts) {
-		MutableText breakdown = new TranslatableText("text.werewolf.role.breakdown.header");
+		MutableText breakdown = Text.translatable("text.werewolf.role.breakdown.header");
 		for (Object2IntMap.Entry<Role> entry : roleCounts.object2IntEntrySet()) {
 			Role role = entry.getKey();
 			int count = entry.getIntValue();
 
 			if (count > 0) {
 				String translationKey = "text.werewolf.role.breakdown." + (count == 1 ? "single" : "plural");
-				breakdown.append(new LiteralText("\n")).append(new TranslatableText(translationKey, role.getName(), FORMAT.format(count)));
+				breakdown.append(Text.literal("\n")).append(Text.translatable(translationKey, role.getName(), FORMAT.format(count)));
 			}
 		}
 		this.sendGameMessage(breakdown);
@@ -276,33 +272,6 @@ public class WerewolfActivePhase {
 		});
 	}
 
-	private ActionResult handleMessage(String message, ServerPlayerEntity sender) {
-		if (message.length() == 0) return ActionResult.SUCCESS;
-		if (message.charAt(0) != '#') return ActionResult.SUCCESS;
-		
-		AbstractPlayerEntry entry = this.getEntryFromPlayer(sender);
-		if (entry == null) return ActionResult.SUCCESS;
-
-		if (!entry.getRole().canUseWolfChannel()) {
-			entry.sendDirectMessage("channel.wolf.denied");
-			return ActionResult.FAIL;
-		}
-
-		this.sendWolfMessage(new TranslatableText("chat.type.text", sender.getDisplayName(), message.substring(1)).formatted(Formatting.WHITE));
-		return ActionResult.FAIL;
-	}
-
-	private ActionResult onPlayerChat(ServerPlayerEntity sender, Text text) {
-		if (text instanceof TranslatableText) {
-			TranslatableText translatableText = (TranslatableText) text;
-			return this.handleMessage((String) translatableText.getArgs()[1], sender);
-		} else if (text instanceof LiteralText) {
-			LiteralText literalText = (LiteralText) text;
-			return this.handleMessage((String) literalText.asString(), sender);
-		}
-		return ActionResult.SUCCESS;
-	}
-
 	private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
 		return ActionResult.FAIL;
 	}
@@ -358,11 +327,7 @@ public class WerewolfActivePhase {
 		this.channelManager.getGameChannel().sendMessage(key, args);
 	}
 
-	private void sendWolfMessage(Text message) {
-		this.channelManager.getWolfChannel().sendMessage(message, true);
-	}
-
-	public void sendWolfMessage(String key, Object... args) {
-		this.channelManager.getWolfChannel().sendMessage(key, args);
+	public void sendWolfMessage(ServerPlayerEntity sender, SignedMessage message) {
+		this.channelManager.getWolfChannel().sendChatMessage(sender, message);
 	}
 }
