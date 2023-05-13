@@ -1,5 +1,6 @@
 {
 	"type": "werewolf:werewolf",
+	"icon": "minecraft:bone",
 	"map": "werewolf:werewolf",
 	"players": {
 		"min": 1,
