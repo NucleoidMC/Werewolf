@@ -82,14 +82,14 @@ public class RolesCommand {
 			return 1;
 		}
 
-		context.getSource().sendFeedback(RolesCommand.getRoleMessage(role, id), false);
+		context.getSource().sendFeedback(() -> RolesCommand.getRoleMessage(role, id), false);
 		return 0;
 	}
 
 	private static int executeList(CommandContext<ServerCommandSource> context) {
 		for (Identifier id : Role.REGISTRY.keySet()) {
 			Role role = Role.REGISTRY.get(id);
-			context.getSource().sendFeedback(RolesCommand.getRoleMessage(role, id), false);
+			context.getSource().sendFeedback(() -> RolesCommand.getRoleMessage(role, id), false);
 		}
 		return 0;
 	}
