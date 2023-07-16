@@ -115,7 +115,7 @@ public class ActionsCommand {
 			return 1;
 		}
 
-		context.getSource().sendFeedback(ActionsCommand.getActionMessage(action, entry, index, player.equals(context.getSource().getPlayer())), true);
+		context.getSource().sendFeedback(() -> ActionsCommand.getActionMessage(action, entry, index, player.equals(context.getSource().getPlayer())), true);
 		return 0;
 	}
 
@@ -129,7 +129,7 @@ public class ActionsCommand {
 		}
 
 		action.use(entry);
-		context.getSource().sendFeedback(Text.translatable("command.werewolf.actions.queue.success"), true);
+		context.getSource().sendFeedback(() -> Text.translatable("command.werewolf.actions.queue.success"), true);
 		return 0;
 	}
 
@@ -143,19 +143,20 @@ public class ActionsCommand {
 		}
 
 		action.execute(entry);
-		context.getSource().sendFeedback(Text.translatable("command.werewolf.actions.execute.success"), true);
+		context.getSource().sendFeedback(() -> Text.translatable("command.werewolf.actions.execute.success"), true);
 		return 0;
 	}
 
 	private static int executeList(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) throws CommandSyntaxException {
 		AbstractPlayerEntry entry = ActionsCommand.obtainPlayerEntry(context, player);
 
-		context.getSource().sendFeedback(Text.translatable("command.werewolf.actions.list.header", player.getDisplayName(), entry.getActions().size()), true);
+		context.getSource().sendFeedback(() -> Text.translatable("command.werewolf.actions.list.header", player.getDisplayName(), entry.getActions().size()), true);
 
 		int index = 0;
 		boolean self = player.equals(context.getSource().getPlayer());
 		for (Action action : entry.getActions()) {
-			context.getSource().sendFeedback(ActionsCommand.getActionMessage(action, entry, index, self), true);
+			int finalIndex = index;
+			context.getSource().sendFeedback(() -> ActionsCommand.getActionMessage(action, entry, finalIndex, self), true);
 			index += 1;
 		}
 
