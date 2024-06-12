@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import eu.pb4.polymer.virtualentity.api.attachment.HolderAttachment;
 import io.github.haykam821.werewolf.game.WerewolfConfig;
 import io.github.haykam821.werewolf.game.channel.ChannelManager;
 import io.github.haykam821.werewolf.game.event.PlayerEntryObtainer;
@@ -49,7 +50,9 @@ public class WerewolfActivePhase {
 	private final ServerWorld world;
 	private final WerewolfMap map;
 	private final WerewolfConfig config;
+	private HolderAttachment guideText;
 	private final List<AbstractPlayerEntry> players = new ArrayList<>();
+	private int ticks;
 	private int ticksUntilSwitch;
 	private TimeCycle timeCycle = TimeCycle.NIGHT;
 	private final List<ActionQueueEntry> actionQueue = new ArrayList<>();
@@ -57,13 +60,14 @@ public class WerewolfActivePhase {
 	private final ChannelManager channelManager;
 	private final VoteManager voteManager;
 
-	public WerewolfActivePhase(GameSpace gameSpace, ServerWorld world, GlobalWidgets widgets, WerewolfMap map, WerewolfConfig config) {
+	public WerewolfActivePhase(GameSpace gameSpace, ServerWorld world, GlobalWidgets widgets, WerewolfMap map, WerewolfConfig config, HolderAttachment guideText) {
 		this.gameSpace = gameSpace;
 		this.world = world;
 		this.map = map;
 		this.config = config;
-		this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
+		this.guideText = guideText;
 
+		this.ticksUntilSwitch = this.config.getMaxTimeCycleLength();
 
 		this.bar = new TimeCycleBar(this, widgets);
 		this.voteManager = new VoteManager(this);
@@ -79,11 +83,11 @@ public class WerewolfActivePhase {
 		activity.deny(GameRuleType.THROW_ITEMS);
 	}
 
-	public static void open(GameSpace gameSpace, ServerWorld world, WerewolfMap map, WerewolfConfig config) {
+	public static void open(GameSpace gameSpace, ServerWorld world, WerewolfMap map, WerewolfConfig config, HolderAttachment guideText) {
 		gameSpace.setActivity(activity -> {
 			GlobalWidgets widgets = GlobalWidgets.addTo(activity);
 			WerewolfActivePhase.setRules(activity);
-			WerewolfActivePhase phase = new WerewolfActivePhase(gameSpace, world, widgets, map, config);
+			WerewolfActivePhase phase = new WerewolfActivePhase(gameSpace, world, widgets, map, config, guideText);
 
 			// Listeners
 			activity.listen(GameActivityEvents.ENABLE, phase::enable);
@@ -212,6 +216,15 @@ public class WerewolfActivePhase {
 	}
 
 	private void tick() {
+		if (this.guideText != null) {
+			this.ticks += 1;
+
+			if (this.ticks == this.config.getGuideTicks()) {
+				this.guideText.destroy();
+				this.guideText = null;
+			}
+		}
+
 		if (this.ticksUntilSwitch <= 0) {
 			this.resetAndCycleTime();
 		}

@@ -1,6 +1,10 @@
 package io.github.haykam821.werewolf.game.phase;
 
+import eu.pb4.polymer.virtualentity.api.ElementHolder;
+import eu.pb4.polymer.virtualentity.api.attachment.ChunkAttachment;
+import eu.pb4.polymer.virtualentity.api.attachment.HolderAttachment;
 import io.github.haykam821.werewolf.game.WerewolfConfig;
+import io.github.haykam821.werewolf.game.map.GuideText;
 import io.github.haykam821.werewolf.game.map.WerewolfMap;
 import io.github.haykam821.werewolf.game.map.WerewolfMapBuilder;
 import net.minecraft.entity.damage.DamageSource;
@@ -28,6 +32,8 @@ public class WerewolfWaitingPhase {
 	private final WerewolfMap map;
 	private final WerewolfConfig config;
 
+	private HolderAttachment guideText;
+
 	public WerewolfWaitingPhase(GameSpace gameSpace, ServerWorld world, WerewolfMap map, WerewolfConfig config) {
 		this.gameSpace = gameSpace;
 		this.world = world;
@@ -53,6 +59,7 @@ public class WerewolfWaitingPhase {
 			activity.listen(PlayerDamageEvent.EVENT, phase::onPlayerDamage);
 			activity.listen(PlayerDeathEvent.EVENT, phase::onPlayerDeath);
 			activity.listen(GamePlayerEvents.OFFER, phase::offerPlayer);
+			activity.listen(GameActivityEvents.ENABLE, phase::enable);
 			activity.listen(GameActivityEvents.REQUEST_START, phase::requestStart);
 		});
 	}
@@ -63,8 +70,18 @@ public class WerewolfWaitingPhase {
 		});
 	}
 
+	private void enable() {
+		// Spawn guide text
+		Vec3d guideTextPos = this.map.getGuideTextPos();
+
+		if (guideTextPos != null) {
+			ElementHolder holder = GuideText.createElementHolder();
+			this.guideText = ChunkAttachment.of(holder, world, guideTextPos);
+		}
+	}
+
 	public GameResult requestStart() {
-		WerewolfActivePhase.open(this.gameSpace, this.world, this.map, this.config);
+		WerewolfActivePhase.open(this.gameSpace, this.world, this.map, this.config, this.guideText);
 		return GameResult.ok();
 	}
 

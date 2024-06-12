@@ -33,11 +33,12 @@ public class WerewolfMapBuilder {
 
 		BlockBounds spawn = template.getMetadata().getFirstRegionBounds("spawn");
 		Set<BlockBounds> campfires = template.getMetadata().getRegionBounds("campfire").collect(Collectors.toSet());
+		BlockBounds guideTextPos = template.getMetadata().getFirstRegionBounds("guide_text");
 
 		if (spawn == null) {
-			return new WerewolfMap(template, BlockBounds.ofBlock(new BlockPos(0, 0, 0)), campfires);
+			return new WerewolfMap(template, BlockBounds.ofBlock(new BlockPos(0, 0, 0)), campfires, guideTextPos);
 		}
 
-		return new WerewolfMap(template, spawn, campfires);
+		return new WerewolfMap(template, spawn, campfires, guideTextPos);
 	}
 }
