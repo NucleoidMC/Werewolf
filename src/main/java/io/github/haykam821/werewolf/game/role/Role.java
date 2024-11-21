@@ -12,7 +12,7 @@ import io.github.haykam821.werewolf.game.role.action.LynchAction;
 import io.github.haykam821.werewolf.game.timecycle.TimeCycle;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import xyz.nucleoid.plasmid.registry.TinyRegistry;
+import xyz.nucleoid.plasmid.api.util.TinyRegistry;
 
 public abstract class Role {
 	public static final TinyRegistry<Role> REGISTRY = TinyRegistry.create();

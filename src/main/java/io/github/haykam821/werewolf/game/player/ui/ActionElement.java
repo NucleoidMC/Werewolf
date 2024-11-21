@@ -36,6 +36,6 @@ public final class ActionElement {
 	}
 
 	protected static void playClickSound(PlayerEntry entry) {
-		entry.getPlayer().playSound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.MASTER, 1, 1);
+		entry.getPlayer().playSoundToPlayer(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.MASTER, 1, 1);
 	}
 }
