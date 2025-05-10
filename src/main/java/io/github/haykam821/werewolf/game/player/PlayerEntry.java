@@ -1,5 +1,7 @@
 package io.github.haykam821.werewolf.game.player;
 
+import java.util.Set;
+
 import io.github.haykam821.werewolf.game.channel.Channel;
 import io.github.haykam821.werewolf.game.channel.DirectChannel;
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
@@ -45,9 +47,18 @@ public class PlayerEntry extends AbstractPlayerEntry {
 		this.ui.open();
 
 		Vec3d spawn = spawnBounds.center();
-		this.player.teleport(world, spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0);
+		this.player.teleport(world, spawn.getX(), spawn.getY(), spawn.getZ(), Set.of(), 0, 0, true);
 
 		this.sendDirectMessage("text.werewolf.role.initial", this.role.getName());
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+
+		if (!this.ui.isOpen()) {
+			this.ui.open();
+		}
 	}
 
 	@Override

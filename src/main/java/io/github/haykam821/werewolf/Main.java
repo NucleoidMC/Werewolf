@@ -14,18 +14,18 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import xyz.nucleoid.plasmid.game.GameType;
+import xyz.nucleoid.plasmid.api.game.GameType;
 
 public class Main implements ModInitializer {
-	public static final String MOD_ID = "werewolf";
+	private static final String MOD_ID = "werewolf";
 
-	private static final Identifier EXTINGUISHABLE_CAMPFIRES_ID = new Identifier(MOD_ID, "extinguishable_campfires");
+	private static final Identifier EXTINGUISHABLE_CAMPFIRES_ID = Main.identifier("extinguishable_campfires");
 	public static final TagKey<Block> EXTINGUISHABLE_CAMPFIRES = TagKey.of(RegistryKeys.BLOCK, EXTINGUISHABLE_CAMPFIRES_ID);
 
-	private static final Identifier WEREWOLF_ID = new Identifier(MOD_ID, "werewolf");
+	private static final Identifier WEREWOLF_ID = Main.identifier("werewolf");
 	public static final GameType<WerewolfConfig> WEREWOLF_GAME_TYPE = GameType.register(WEREWOLF_ID, WerewolfConfig.CODEC, WerewolfWaitingPhase::open);
 
-	private static final Identifier WOLF_CHANNEL_ID = new Identifier(MOD_ID, "wolf_channel");
+	private static final Identifier WOLF_CHANNEL_ID = Main.identifier("wolf_channel");
 	public static final RegistryKey<MessageType> WOLF_CHANNEL_KEY = RegistryKey.of(RegistryKeys.MESSAGE_TYPE, WOLF_CHANNEL_ID);
 
 	@Override
@@ -36,5 +36,9 @@ public class Main implements ModInitializer {
 			RolesCommand.register(dispatcher);
 			WolfMsgCommand.register(dispatcher);
 		});
+	}
+
+	public static Identifier identifier(String path) {
+		return Identifier.of(MOD_ID, path);
 	}
 }

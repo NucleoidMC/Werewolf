@@ -3,11 +3,13 @@ package io.github.haykam821.werewolf.game.map;
 import java.util.Set;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.map_templates.MapTemplate;
-import xyz.nucleoid.plasmid.game.world.generator.TemplateChunkGenerator;
+import xyz.nucleoid.plasmid.api.game.world.generator.TemplateChunkGenerator;
 
 public class WerewolfMap {
 	private final MapTemplate template;
@@ -24,6 +26,11 @@ public class WerewolfMap {
 
 	public BlockBounds getSpawn() {
 		return this.spawn;
+	}
+
+	public void teleportToSpawn(ServerPlayerEntity player, ServerWorld world) {
+		Vec3d spawn = this.getSpawn().center();
+		player.teleport(world, spawn.getX(), spawn.getY(), spawn.getZ(), Set.of(), 0, 0, true);
 	}
 
 	public Set<BlockBounds> getCampfires() {

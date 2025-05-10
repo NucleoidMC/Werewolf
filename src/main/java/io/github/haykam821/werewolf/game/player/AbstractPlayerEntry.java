@@ -111,6 +111,10 @@ public abstract class AbstractPlayerEntry {
 		return;
 	}
 
+	public void tick() {
+		return;
+	}
+
 	public Text getLynchRoleName() {
 		Text roleName = this.getRole().getName();
 

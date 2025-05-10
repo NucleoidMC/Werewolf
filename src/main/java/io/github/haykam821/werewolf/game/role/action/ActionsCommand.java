@@ -16,8 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
-import xyz.nucleoid.plasmid.game.manager.GameSpaceManager;
-import xyz.nucleoid.plasmid.game.manager.ManagedGameSpace;
+import xyz.nucleoid.plasmid.api.game.GameSpace;
+import xyz.nucleoid.plasmid.api.game.GameSpaceManager;
 import xyz.nucleoid.stimuli.Stimuli;
 
 public class ActionsCommand {
@@ -91,7 +91,7 @@ public class ActionsCommand {
 	}
 
 	public static AbstractPlayerEntry obtainPlayerEntry(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) throws CommandSyntaxException {
-		ManagedGameSpace gameSpace = GameSpaceManager.get().byPlayer(player);
+		GameSpace gameSpace = GameSpaceManager.get().byPlayer(player);
 		if (gameSpace == null) {
 			throw new SimpleCommandExceptionType(Text.translatable("command.werewolf.actions.not_in_game", player.getDisplayName())).create();
 		}

@@ -3,8 +3,8 @@ package io.github.haykam821.werewolf.game.timecycle;
 import io.github.haykam821.werewolf.game.phase.WerewolfActivePhase;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.text.Text;
-import xyz.nucleoid.plasmid.game.common.GlobalWidgets;
-import xyz.nucleoid.plasmid.game.common.widget.BossBarWidget;
+import xyz.nucleoid.plasmid.api.game.common.GlobalWidgets;
+import xyz.nucleoid.plasmid.api.game.common.widget.BossBarWidget;
 
 public class TimeCycleBar {
 	private static final BossBar.Style STYLE = BossBar.Style.PROGRESS;

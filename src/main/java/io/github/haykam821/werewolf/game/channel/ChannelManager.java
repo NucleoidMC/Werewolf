@@ -3,7 +3,7 @@ package io.github.haykam821.werewolf.game.channel;
 import java.util.List;
 
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
-import xyz.nucleoid.plasmid.game.GameSpace;
+import xyz.nucleoid.plasmid.api.game.GameSpace;
 
 public class ChannelManager {
 	private final Channel gameChannel;

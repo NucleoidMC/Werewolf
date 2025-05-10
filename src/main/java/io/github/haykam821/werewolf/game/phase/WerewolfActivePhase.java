@@ -29,17 +29,18 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.world.GameMode;
-import xyz.nucleoid.plasmid.game.GameActivity;
-import xyz.nucleoid.plasmid.game.GameCloseReason;
-import xyz.nucleoid.plasmid.game.GameSpace;
-import xyz.nucleoid.plasmid.game.common.GlobalWidgets;
-import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
-import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
-import xyz.nucleoid.plasmid.game.player.PlayerOffer;
-import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
-import xyz.nucleoid.plasmid.game.rule.GameRuleType;
+import xyz.nucleoid.plasmid.api.game.GameActivity;
+import xyz.nucleoid.plasmid.api.game.GameCloseReason;
+import xyz.nucleoid.plasmid.api.game.GameSpace;
+import xyz.nucleoid.plasmid.api.game.common.GlobalWidgets;
+import xyz.nucleoid.plasmid.api.game.event.GameActivityEvents;
+import xyz.nucleoid.plasmid.api.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.api.game.player.JoinAcceptor;
+import xyz.nucleoid.plasmid.api.game.player.JoinAcceptorResult;
+import xyz.nucleoid.plasmid.api.game.player.JoinOffer;
+import xyz.nucleoid.plasmid.api.game.rule.GameRuleType;
+import xyz.nucleoid.stimuli.event.EventResult;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 
@@ -92,7 +93,8 @@ public class WerewolfActivePhase {
 			// Listeners
 			activity.listen(GameActivityEvents.ENABLE, phase::enable);
 			activity.listen(GameActivityEvents.TICK, phase::tick);
-			activity.listen(GamePlayerEvents.OFFER, phase::offerPlayer);
+			activity.listen(GamePlayerEvents.ACCEPT, phase::onAcceptPlayers);
+			activity.listen(GamePlayerEvents.OFFER, JoinOffer::acceptSpectators);
 			activity.listen(PlayerDamageEvent.EVENT, phase::onPlayerDamage);
 			activity.listen(PlayerDeathEvent.EVENT, phase::onPlayerDeath);
 			activity.listen(PlayerEntryObtainer.EVENT, phase::getEntryFromPlayer);
@@ -141,6 +143,11 @@ public class WerewolfActivePhase {
 		for (AbstractPlayerEntry entry : this.players) { 
 			entry.resetRemainingActions();
 			entry.spawn(world, this.map.getSpawn());
+		}
+
+		for (ServerPlayerEntity player : this.gameSpace.getPlayers().spectators()) {
+			this.map.teleportToSpawn(player, this.world);
+			this.setSpectator(player);
 		}
 
 		this.sendBreakdown(roleCounts);
@@ -237,6 +244,8 @@ public class WerewolfActivePhase {
 		boolean finished = true;
 
 		for (AbstractPlayerEntry entry : this.players) {
+			entry.tick();
+
 			if (entry.getRemainingActions() > 0) {
 				finished = false;
 			}
@@ -279,23 +288,23 @@ public class WerewolfActivePhase {
 		return null;
 	}
 
-	private PlayerOfferResult offerPlayer(PlayerOffer offer) {
-		return offer.accept(this.world, this.map.getSpawn().center()).and(() -> {
-			this.setSpectator(offer.player());
+	private JoinAcceptorResult onAcceptPlayers(JoinAcceptor acceptor) {
+		return acceptor.teleport(this.world, this.map.getSpawn().center()).thenRunForEach(player -> {
+			this.setSpectator(player);
 		});
 	}
 
-	private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
-		return ActionResult.FAIL;
+	private EventResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
+		return EventResult.DENY;
 	}
 
-	private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
+	private EventResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
 		AbstractPlayerEntry entry = this.getEntryFromPlayer(player);
 		if (entry != null) {
 			entry.spawn(this.world, this.map.getSpawn());
 		}
 
-		return ActionResult.SUCCESS;
+		return EventResult.ALLOW;
 	}
 
 	public void queueAction(Action action, AbstractPlayerEntry user) {

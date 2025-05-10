@@ -15,7 +15,7 @@ public enum Roles {
 	private Roles(String path, Role role) {
 		this.role = role;
 
-		Identifier id = new Identifier(Main.MOD_ID, path);
+		Identifier id = Main.identifier(path);
 		Role.REGISTRY.register(id, role);
 	}
 

@@ -3,7 +3,6 @@ package io.github.haykam821.werewolf.game.player.ui;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import eu.pb4.sgui.api.GuiHelpers;
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.gui.HotbarGui;
 import io.github.haykam821.werewolf.game.player.PlayerEntry;
@@ -56,18 +55,11 @@ public class ActionUi extends HotbarGui {
 				break;
 			}
 		}
-
-		GuiHelpers.sendPlayerInventory(player);
 	}
 
 	@Override
-	public void close(boolean screenHandlerIsClosed) {
-		super.close(screenHandlerIsClosed);
-
-		if (!this.isOpen()) {
-			this.open();
-			this.update();
-		}
+	public boolean canPlayerClose() {
+		return false;
 	}
 
 	// Pagination
