@@ -36,7 +36,7 @@ public class RolesCommand {
 		Text valueText = value ? TRUE_TEXT : FALSE_TEXT;
 		return valueText.copy().styled(style -> {
 			Text fullDescription = valueText.copy().append(" ").append(description);
-			return style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, fullDescription));
+			return style.withHoverEvent(new HoverEvent.ShowText(fullDescription));
 		});
 	}
 
@@ -66,7 +66,7 @@ public class RolesCommand {
 				roleClass = roleClass.getSuperclass();
 			}
 
-			return style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+			return style.withHoverEvent(new HoverEvent.ShowText(hoverText));
 		});
 		text.append(Text.literal(" - ").append(entryText).formatted(Formatting.GRAY));
 

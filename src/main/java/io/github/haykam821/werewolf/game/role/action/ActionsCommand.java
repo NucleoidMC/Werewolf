@@ -10,6 +10,7 @@ import io.github.haykam821.werewolf.game.event.PlayerEntryObtainer;
 import io.github.haykam821.werewolf.game.player.AbstractPlayerEntry;
 import io.github.haykam821.werewolf.game.player.PlayerEntry;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -77,13 +78,13 @@ public class ActionsCommand {
 	 */
 	private static Text getActionMessage(Action action, AbstractPlayerEntry user, int index, boolean self) {
 		return Text.literal("- ").append(action.getName().copy().styled(style -> {
-			HoverEvent.ItemStackContent content = new HoverEvent.ItemStackContent(action.getDisplayStack(user));
-			style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, content));
+			ItemStack stack = action.getDisplayStack(user);
+			style = style.withHoverEvent(new HoverEvent.ShowItem(stack));
 
 			if (user instanceof PlayerEntry) {
 				PlayerEntry playerEntry = (PlayerEntry) user;
 				String command = "/actions queue " + index + (self ? "" : " " + playerEntry.getPlayer().getGameProfile().getName());
-				style = style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+				style = style.withClickEvent(new ClickEvent.RunCommand(command));
 			}
 
 			return style;
